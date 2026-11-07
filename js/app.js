@@ -137,7 +137,7 @@ async function detectVisitorCountry() {
 
   if (countryFlagEl) countryFlagEl.textContent = detectedCountry.flag;
   if (countryNameEl) countryNameEl.textContent = detectedCountry.name;
-  if (detectedCountryTextEl) detectedCountryTextEl.textContent = `${detectedCountry.name} ${detectedCountry.flag}`;
+  if (detectedCountryTextEl) detectedCountryTextEl.textContent = `${detectedCountry.code || detectedCountry.name} ${detectedCountry.flag}`;
   if (hiddenCountryEl) hiddenCountryEl.value = `${detectedCountry.name} (${detectedCountry.code})`;
 
   trackCountryVisit(detectedCountry.name, detectedCountry.code);
