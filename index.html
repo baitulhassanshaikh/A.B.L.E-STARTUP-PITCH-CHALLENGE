@@ -248,7 +248,7 @@
         <!-- FORM CONTENT -->
         <form id="registration-form" class="mt-6 space-y-5">
           <!-- Web3Forms Hidden Metadata -->
-          <input type="hidden" name="access_key" id="web3forms_key" value="790ef150-22d9-4c60-900d-c3ca4fe68f73">
+          <input type="hidden" name="access_key" id="web3forms_key" value="bb74c042-c23a-442e-b0f1-83a02d802be0">
           <input type="hidden" name="from_name" value="ABLE Nonprofit Portal">
           <input type="hidden" name="subject" value="ðŸš€ New Startup Challenge Registration - ABLE">
           <input type="hidden" name="detected_country" id="hidden_country" value="United States">
@@ -425,17 +425,23 @@
             <div class="w-12 h-12 rounded-2xl bg-brand-green text-white flex items-center justify-center shrink-0 shadow-md">
               <i data-lucide="mail-check" class="w-6 h-6"></i>
             </div>
-            <div class="text-center sm:text-left space-y-1">
-              <h3 class="font-display font-black text-xl text-slate-900">
-                You're registered!
-              </h3>
-              <p class="text-sm font-bold text-brand-green-dark">
-                Please check your Gmail / Email inbox right away for event details and prep materials.
+            <div class="text-center sm:text-left space-y-1 w-full">
+              <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
+                <h3 class="font-display font-black text-xl text-slate-900">
+                  Registration Successful!
+                </h3>
+                <span id="dispatch-badge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-300 flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Gmail Dispatched
+                </span>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-700 leading-relaxed pt-1">
+                Submission details forwarded to <strong class="text-emerald-800">alfaizablebusines@gmail.com</strong>.
               </p>
-              <p class="text-xs text-slate-600 pt-1 leading-relaxed">
-                Your submission has been dispatched directly to the ABLE program coordinators at 
-                <strong>alfaizablebusines@gmail.com</strong>. You can save or print your official competitor pass below.
-              </p>
+              <div class="mt-2.5 p-3 rounded-2xl bg-white/80 border border-emerald-200 text-xs text-slate-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span>📧 Notification status: <strong class="text-slate-800" id="dispatch-status-msg">Delivered to Coordinator Gmail</strong></span>
+                <span class="text-[11px] text-amber-700 font-medium">Tip: Check Gmail Spam / Updates folder if not in Primary</span>
+              </div>
             </div>
           </div>
 
@@ -459,38 +465,28 @@
               </span>
             </div>
 
-            <div class="py-6 grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
-              <div class="sm:col-span-2 space-y-3.5">
-                <div>
-                  <span class="text-[11px] text-slate-400 uppercase font-semibold">Competitor Name</span>
-                  <div class="text-2xl font-black font-display text-white" id="ticket-name">Student Name</div>
-                </div>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <span class="text-slate-400">Grade Level:</span>
-                    <div class="text-slate-200 font-bold mt-0.5" id="ticket-grade">Freshman</div>
-                  </div>
-                  <div>
-                    <span class="text-slate-400">Competing Status:</span>
-                    <div class="text-brand-green font-bold mt-0.5" id="ticket-status">Yes, Competing</div>
-                  </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <span class="text-slate-400">Venue Choice:</span>
-                    <div class="text-slate-200 font-bold mt-0.5" id="ticket-venue">In-Person (Colorado Springs)</div>
-                  </div>
-                  <div>
-                    <span class="text-slate-400">Event Date:</span>
-                    <div class="text-amber-400 font-bold mt-0.5">November 2026</div>
-                  </div>
-                </div>
+            <div class="py-6 space-y-4">
+              <div>
+                <span class="text-[11px] text-slate-400 uppercase font-semibold">Competitor Name</span>
+                <div class="text-2xl sm:text-3xl font-black font-display text-white tracking-tight" id="ticket-name">Student Name</div>
               </div>
-
-              <!-- QR Code -->
-              <div class="flex flex-col items-center justify-center p-3.5 bg-white rounded-2xl text-slate-900 shadow-md">
-                <img id="ticket-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=ABLE-PITCH-VALID" alt="QR Code" class="w-24 h-24 object-contain">
-                <span class="text-[9px] font-mono font-bold text-slate-500 mt-1.5 uppercase tracking-wider">Tournament Entry</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 text-xs">
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <span class="text-slate-400 text-[11px]">Grade Level:</span>
+                  <div class="text-slate-200 font-bold mt-0.5" id="ticket-grade">Freshman</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <span class="text-slate-400 text-[11px]">Competing Status:</span>
+                  <div class="text-brand-green font-bold mt-0.5" id="ticket-status">Yes, Competing</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <span class="text-slate-400 text-[11px]">Venue Choice:</span>
+                  <div class="text-slate-200 font-bold mt-0.5" id="ticket-venue">In-Person (Colorado Springs)</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+                  <span class="text-slate-400 text-[11px]">Event Date:</span>
+                  <div class="text-amber-400 font-bold mt-0.5">November 2026</div>
+                </div>
               </div>
             </div>
 
@@ -501,14 +497,18 @@
           </div>
 
           <!-- Actions -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 no-print">
-            <button type="button" onclick="window.print()" class="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 no-print">
+            <button type="button" onclick="window.print()" class="w-full py-3.5 px-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
               <i data-lucide="printer" class="w-4 h-4 text-brand-green"></i>
-              <span>Print / Download Ticket</span>
+              <span>Print Pass</span>
             </button>
-            <button type="button" onclick="resetForNewRegistration()" class="w-full py-3.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 transition">
+            <button type="button" onclick="emailMyPassCopy()" class="w-full py-3.5 px-3 rounded-2xl bg-brand-green hover:bg-brand-green-dark text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-sm">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Email My Pass</span>
+            </button>
+            <button type="button" onclick="resetForNewRegistration()" class="w-full py-3.5 px-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 transition">
               <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              <span>Register Another Student</span>
+              <span>Register Another</span>
             </button>
           </div>
         </div>

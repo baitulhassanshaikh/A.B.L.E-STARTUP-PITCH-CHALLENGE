@@ -221,23 +221,48 @@ if (form) {
     };
 
     // Direct Web3Forms submission to alfaizablebusines@gmail.com
-    // Key: 790ef150-22d9-4c60-900d-c3ca4fe68f73
-    try {
-      const payload = Object.fromEntries(formData.entries());
-      payload.client_location = `${detectedCountry.name} (${detectedCountry.code})`;
-      payload.ticket_id = submissionData.id;
+    // Key: bb74c042-c23a-442e-b0f1-83a02d802be0
+    // Note: Web3Forms Free API requires FormData (multipart/form-data) without custom JSON headers
+    let emailDispatchSuccess = false;
+    let dispatchStatusText = "";
 
-      await fetch('https://api.web3forms.com/submit', {
+    try {
+      formData.set('access_key', 'bb74c042-c23a-442e-b0f1-83a02d802be0');
+      formData.set('ticket_id', submissionData.id);
+      formData.set('client_location', `${detectedCountry.name} (${detectedCountry.code})`);
+      formData.set('replyto', submissionData.email);
+      formData.set('from_name', 'ABLE Pitch Challenge System');
+      formData.set('subject', `🚀 New Pitch Registration: ${submissionData.name} (${submissionData.gradeLevel})`);
+
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(res => res.json()).then(data => {
-        console.log('Web3Forms dispatch confirmed:', data);
-      }).catch(err => {
-        console.log('Web3Forms dispatch completed / offline fallback.');
+        body: formData
       });
+
+      const responseData = await res.json();
+      console.log('Web3Forms dispatch response:', responseData);
+
+      if (responseData.success) {
+        emailDispatchSuccess = true;
+        dispatchStatusText = "Delivered directly to alfaizablebusines@gmail.com";
+        showToast(
+          "Registration Sent to Gmail!",
+          "Successfully forwarded to alfaizablebusines@gmail.com. Check inbox & Spam folder.",
+          "success"
+        );
+      } else {
+        console.warn('Web3Forms API notice:', responseData.message);
+        dispatchStatusText = responseData.message || "Email dispatch queued";
+        showToast(
+          "Registration Stored",
+          "Digital pass generated and stored in Admin database.",
+          "warning"
+        );
+      }
     } catch (err) {
-      console.warn('Network non-blocking error:', err);
+      console.warn('Web3Forms fetch error:', err);
+      dispatchStatusText = "Saved locally in Admin database (Network offline)";
+      showToast("Registration Saved", "Stored locally on your device.", "warning");
     }
 
     // Store in LocalStorage
@@ -250,6 +275,22 @@ if (form) {
     const currentSubs = parseInt(localStorage.getItem(STORAGE_KEY_SUBMISSIONS_COUNT) || '0', 10);
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, (currentSubs + 1).toString());
     trackCountryRegistration(detectedCountry.name);
+
+    // Update Confirmation Badges
+    const badge = document.getElementById('dispatch-badge');
+    if (badge) {
+      if (emailDispatchSuccess) {
+        badge.className = "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-300 flex items-center gap-1";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Gmail Dispatched`;
+      } else {
+        badge.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold border border-amber-300 flex items-center gap-1";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> Stored`;
+      }
+    }
+    const statusMsgElem = document.getElementById('dispatch-status-msg');
+    if (statusMsgElem) {
+      statusMsgElem.textContent = dispatchStatusText;
+    }
 
     // Render Digital Pass
     populateDigitalTicket(submissionData);
@@ -267,8 +308,8 @@ if (form) {
 
     document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
 
-    // Voice notification
-    speakAiText("You're registered! Please check your Gmail or email inbox right away for event details and prep materials.");
+    // Voice & audible notification
+    speakAiText("You're registered! Your details have been sent to the coordinators at alfaizablebusines@gmail.com. Please check your email inbox and spam folder.");
   });
 }
 
@@ -279,9 +320,36 @@ function populateDigitalTicket(data) {
   document.getElementById('ticket-status').textContent = data.competingStatus;
   document.getElementById('ticket-venue').textContent = data.venueAttendance;
 
-  const qrData = encodeURIComponent(`https://able-nonprofit.org/pitch?id=${data.id}&name=${data.name}`);
-  document.getElementById('ticket-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${qrData}`;
+  const qrElem = document.getElementById('ticket-qr');
+  if (qrElem) {
+    const qrData = encodeURIComponent(`https://able-nonprofit.org/pitch?id=${data.id}&name=${data.name}`);
+    qrElem.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${qrData}`;
+  }
 }
+
+window.emailMyPassCopy = function() {
+  const name = document.getElementById('ticket-name').textContent;
+  const id = document.getElementById('ticket-id').textContent;
+  const grade = document.getElementById('ticket-grade').textContent;
+  const venue = document.getElementById('ticket-venue').textContent;
+
+  const subject = encodeURIComponent(`ABLE Startup Pitch Challenge Entry Pass - ${name}`);
+  const body = encodeURIComponent(
+    `Hello ${name},\n\n` +
+    `Here is your official registration confirmation for the ABLE Business Startup Pitch Challenge:\n\n` +
+    `• Ticket ID: ${id}\n` +
+    `• Competitor: ${name}\n` +
+    `• Grade Level: ${grade}\n` +
+    `• Venue: ${venue}\n` +
+    `• Event Timeline: November 2026\n` +
+    `• Grand Prize: $250 1st Place Cash Prize\n\n` +
+    `Submitted to ABLE Nonprofit Coordinators: alfaizablebusines@gmail.com\n\n` +
+    `Best regards,\n` +
+    `ABLE Academy of Business & Leadership Empowerment`
+  );
+
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+};
 
 window.resetForNewRegistration = function() {
   if (form) form.reset();
@@ -302,8 +370,56 @@ function escapeHtml(str) {
 }
 
 // ==========================================
-// 4. SPEECH SYNTHESIS & AI ASSISTANT
+// 4. FLOATING NOTIFICATIONS (TOASTS)
 // ==========================================
+function showToast(title, message, type = 'success') {
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.className = 'fixed top-5 right-5 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4';
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `p-4 rounded-2xl shadow-2xl border text-xs flex items-start gap-3 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto ${
+    type === 'success' 
+      ? 'bg-slate-900 text-white border-emerald-500/50' 
+      : 'bg-amber-950 text-amber-100 border-amber-500/50'
+  }`;
+
+  const iconSvg = type === 'success' 
+    ? `<div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 font-bold">✓</div>`
+    : `<div class="w-6 h-6 rounded-full bg-amber-500 text-slate-900 flex items-center justify-center shrink-0 font-bold">!</div>`;
+
+  toast.innerHTML = `
+    ${iconSvg}
+    <div class="flex-1">
+      <div class="font-bold text-sm text-white">${escapeHtml(title)}</div>
+      <div class="text-slate-300 text-[11px] mt-0.5 leading-relaxed">${escapeHtml(message)}</div>
+    </div>
+  `;
+
+  toastContainer.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+  });
+
+  setTimeout(() => {
+    toast.classList.add('opacity-0', 'translate-y-[-10px]');
+    setTimeout(() => toast.remove(), 400);
+  }, 5000);
+}
+
+// ==========================================
+// 5. SPEECH SYNTHESIS & AI ASSISTANT
+// ==========================================
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+}
+
 window.toggleSpeechOutput = function() {
   isSpeechEnabled = !isSpeechEnabled;
   const statusText = document.getElementById('voice-status-text');
@@ -313,6 +429,7 @@ window.toggleSpeechOutput = function() {
     if (statusText) statusText.textContent = "Voice ON";
     if (statusText) statusText.className = "text-[10px] text-brand-green";
     if (icon) icon.className = "w-3.5 h-3.5 text-brand-green";
+    speakAiText("Voice notifications enabled.");
   } else {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -325,18 +442,24 @@ window.toggleSpeechOutput = function() {
 
 function speakAiText(text) {
   if (!isSpeechEnabled || !('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
+  try {
+    window.speechSynthesis.cancel();
 
-  const clean = text.replace(/<[^>]*>/g, '').replace(/👋|🏆|🎓|📅|📍|🎉|🤝|💡/g, '');
-  const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.rate = 1.02;
-  utterance.pitch = 1.0;
-  
-  const voices = window.speechSynthesis.getVoices();
-  const engVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
-  if (engVoice) utterance.voice = engVoice;
+    const clean = text.replace(/<[^>]*>/g, '').replace(/👋|🏆|🎓|📅|📍|🎉|🤝|💡/g, '');
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.rate = 1.02;
+    utterance.pitch = 1.0;
+    
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      const engVoice = voices.find(v => v.lang && v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+      if (engVoice) utterance.voice = engVoice;
+    }
 
-  window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(utterance);
+  } catch (e) {
+    console.warn("Speech synthesis notice:", e);
+  }
 }
 
 window.toggleAiAssistant = function() {
