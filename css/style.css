@@ -1,0 +1,147 @@
+/* ==============================================================
+   ABLE Nonprofit - Pitch Challenge Design System & Theme Styles
+   Clean, soft, organic aesthetic with custom shadows and micro-animations
+   ============================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+
+  /* ABLE Brand Palette */
+  --color-brand-green: #22C55E;
+  --color-brand-green-dark: #16A34A;
+  --color-brand-green-light: #86EFAC;
+  --color-brand-green-subtle: #ECFDF5;
+
+  --color-brand-navy: #1E293B;
+  --color-brand-navy-dark: #0F172A;
+
+  --color-brand-yellow: #F59E0B;
+  --color-brand-yellow-light: #FEF3C7;
+
+  --color-brand-pink: #EC4899;
+  --color-brand-pink-light: #FDF2F8;
+
+  --bg-page: #FAFAFA;
+}
+
+/* Global Page Base with subtle organic ambient gradients */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  background-image: 
+    radial-gradient(at 12% 12%, rgba(34, 197, 94, 0.05) 0px, transparent 50%),
+    radial-gradient(at 88% 18%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
+    radial-gradient(at 50% 88%, rgba(236, 72, 153, 0.04) 0px, transparent 60%);
+  background-attachment: fixed;
+  color: #1E293B;
+  min-height: 100vh;
+}
+
+/* Deep Emerald Hero Banner with Subtle Geometric Pattern */
+.hero-geometric-bg {
+  background-color: #064E3B;
+  background-image: 
+    radial-gradient(circle at 50% 12%, rgba(52, 211, 153, 0.16) 0%, transparent 65%),
+    linear-gradient(180deg, #064E3B 0%, #04382A 100%),
+    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 28px 28px;
+}
+
+/* Headings font */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Custom Soft Scrollbars */
+.custom-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Gentle Soft Pulse Animation */
+@keyframes pulseSoft {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.92;
+  }
+}
+
+.pulse-soft {
+  animation: pulseSoft 3s ease-in-out infinite;
+}
+
+/* Custom Multi-Stage Shadows */
+.shadow-soft {
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
+}
+
+.shadow-card {
+  box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+}
+
+.shadow-glow-green {
+  box-shadow: 0 12px 32px -4px rgba(34, 197, 94, 0.28);
+}
+
+.shadow-glow-yellow {
+  box-shadow: 0 12px 32px -4px rgba(245, 158, 11, 0.28);
+}
+
+/* Gold Gradient Headline */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FDE68A 0%, #FBBF24 50%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Printable Ticket Media Rules */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-ticket,
+  #printable-ticket * {
+    visibility: visible;
+  }
+  #printable-ticket {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 24px;
+    box-shadow: none;
+    background: white !important;
+    color: #0F172A !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

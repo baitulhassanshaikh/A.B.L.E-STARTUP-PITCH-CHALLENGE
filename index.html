@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ABLE | Business Startup Pitch Challenge — November 2026</title>
+        <meta name="description" content="Create a startup idea and blueprint from scratch! 1 week prep with expert mentors, tournament-style judging, and $250 for 1st Place! Open to Grades 6+.">
+        <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+        <!-- Tailwind CSS via CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              green: '#22C55E',
+              'green-dark': '#16A34A',
+              'green-light': '#86EFAC',
+              'green-subtle': '#ECFDF5',
+              navy: '#1E293B',
+              'navy-dark': '#0F172A',
+              yellow: '#F59E0B',
+              'yellow-light': '#FEF3C7',
+              pink: '#EC4899',
+              'pink-light': '#FDF2F8'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif']
+          },
+          boxShadow: {
+            'soft': '0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02)',
+            'card': '0 20px 40px -12px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.02)',
+            'glow-green': '0 12px 32px -4px rgba(34, 197, 94, 0.28)',
+            'glow-yellow': '0 12px 32px -4px rgba(245, 158, 11, 0.28)'
+          }
+        }
+      }
+    }
+        </script>
+        <!-- Lucide Icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <!-- Custom Organic Styles -->
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body class="text-slate-800 antialiased selection:bg-brand-green selection:text-white min-h-screen flex flex-col font-sans">
+  <!-- ============================================================ -->
+  <!-- TOP ANNOUNCEMENT BAR (Dark Green, Responsive Wrap)            -->
+  <!-- ============================================================ -->
+  <div class="bg-[#032f23] text-white text-xs border-b border-emerald-900/60 py-2.5 px-4 w-full">
+    <div class="max-w-6xl mx-auto flex items-center justify-center flex-wrap gap-x-2.5 sm:gap-x-3 gap-y-1 text-center font-medium leading-relaxed">
+      <span class="inline-flex items-center gap-1.5">
+        <i data-lucide="compass" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+        <span>Youth Startup Challenge November 2026</span>
+      </span>
+      <span class="text-white/40 hidden sm:inline">•</span>
+      <span class="inline-flex items-center gap-1.5">
+        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+        <span>1 Week Prep</span>
+      </span>
+      <span class="text-white/40 hidden sm:inline">•</span>
+      <span class="inline-flex items-center gap-1.5">
+        <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+        <span>Tournament Judging</span>
+      </span>
+      <span class="text-white/40 hidden sm:inline">•</span>
+      <span class="inline-flex items-center gap-1.5 font-bold text-amber-300">
+        <i data-lucide="banknote" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i>
+        <span>$250 1st Place Cash Prize</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- HERO BANNER: EXACT DESIGN RECREATION                         -->
+  <!-- Deep Emerald Gradient (#064E3B to #04382A) + Geometric Grid   -->
+  <!-- 100vh Viewport-Fitted Layout on Desktop                      -->
+  <!-- ============================================================ -->
+  <section class="hero-geometric-bg w-full relative py-3 sm:py-5 lg:py-3.5 px-4 sm:px-6 lg:px-8 lg:min-h-[calc(100vh-38px)] flex flex-col justify-between">
+    <div class="max-w-5xl mx-auto flex flex-col items-center justify-between w-full flex-1">
+
+      <!-- NAVBAR CARD (White rounded card inside emerald container) -->
+      <nav class="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 mb-2 sm:mb-3 lg:mb-2">
+        <!-- Logo & Title Left -->
+        <a href="index.html" class="flex items-center gap-2.5 sm:gap-3 group min-w-0">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center justify-center p-1 shrink-0 transition transform group-hover:scale-105 duration-200">
+            <img 
+              src="logo.png" 
+              alt="ABLE Logo" 
+              class="w-full h-full object-contain" 
+              onerror="this.src='assets/logo.png'"
+            />
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-display font-black text-base sm:text-xl text-slate-900 tracking-tight leading-none">ABLE</span>
+            <span class="text-[10px] sm:text-xs text-slate-500 font-medium truncate mt-0.5">
+              Academy of Business &amp; Leadership Empowerment
+            </span>
+          </div>
+        </a>
+
+        <!-- Claim Seat Button Right -->
+        <a 
+          href="#register" 
+          class="bg-[#064E3B] hover:bg-[#04382A] text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm tracking-wide transition shadow-md flex items-center gap-1.5 shrink-0 hover:shadow-lg active:scale-95 duration-150"
+        >
+          <span>Claim Seat</span>
+          <span class="text-emerald-300 font-black">&rarr;</span>
+        </a>
+      </nav>
+
+      <!-- HERO CENTER CONTENT (Badge, Headline, Subtext) -->
+      <div class="flex flex-col items-center text-center w-full my-auto py-1 sm:py-2">
+        <!-- BADGE PILL (Outline style) -->
+        <div class="flex justify-center mb-2 sm:mb-2.5 w-full px-2">
+          <div class="inline-flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white text-xs sm:text-sm font-semibold tracking-wide text-center max-w-full">
+            <span class="text-amber-300 text-xs sm:text-sm">&#10022;</span>
+            <span>Calling Grades 6+ Middle &amp; High Schoolers</span>
+            <span class="text-white/40">•</span>
+            <span class="font-bold text-amber-200">100% Free Entry</span>
+          </div>
+        </div>
+
+        <!-- MAIN HEADLINE (White + Gold Gradient) -->
+        <div class="text-center w-full px-2 mb-2 sm:mb-2.5">
+          <h1 
+            class="font-display font-black tracking-tight text-center leading-[1.12] w-full"
+            style="font-size: clamp(1.85rem, 3.8vw, 3.35rem);"
+          >
+            <span class="text-white block">ABLE Business Startup</span>
+            <span class="block gold-gradient-text mt-0.5 sm:mt-1">Pitch Challenge</span>
+          </h1>
+        </div>
+
+        <!-- SUBTEXT -->
+        <p 
+          class="text-emerald-100/90 text-xs sm:text-sm lg:text-base font-normal leading-relaxed text-center max-w-2xl mx-auto px-4"
+          style="font-size: clamp(0.85rem, 1.35vw, 1rem);"
+        >
+          Create your startup idea, get mentored by industry experts, and compete in live tournament-style judging to win the grand prize. Build real skills, present real solutions, and launch your entrepreneurial journey.
+        </p>
+      </div>
+
+      <!-- 4 CARDS GRID (1 col mobile, 2x2 tablet, 4 in 1 row desktop) -->
+      <div class="w-full mt-2.5 sm:mt-3 lg:mt-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+          
+          <!-- Card 1: $250 -->
+          <div class="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 lg:p-4 shadow-xl text-center flex flex-col items-center justify-center transition transform hover:-translate-y-1 duration-200 border border-slate-100">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center mb-1.5 sm:mb-2">
+              <i data-lucide="trophy" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </div>
+            <div class="font-display font-black text-xl sm:text-2xl lg:text-3xl text-slate-900 tracking-tight leading-none">
+              $250
+            </div>
+            <div class="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-500 mt-1">
+              1st Place Cash Prize
+            </div>
+          </div>
+
+          <!-- Card 2: Nov 2026 -->
+          <div class="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 lg:p-4 shadow-xl text-center flex flex-col items-center justify-center transition transform hover:-translate-y-1 duration-200 border border-slate-100">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center mb-1.5 sm:mb-2">
+              <i data-lucide="calendar" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </div>
+            <div class="font-display font-black text-xl sm:text-2xl lg:text-3xl text-slate-900 tracking-tight leading-none">
+              Nov 2026
+            </div>
+            <div class="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-500 mt-1">
+              Event Month
+            </div>
+          </div>
+
+          <!-- Card 3: Grades 6+ -->
+          <div class="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 lg:p-4 shadow-xl text-center flex flex-col items-center justify-center transition transform hover:-translate-y-1 duration-200 border border-slate-100">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center mb-1.5 sm:mb-2">
+              <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </div>
+            <div class="font-display font-black text-xl sm:text-2xl lg:text-3xl text-slate-900 tracking-tight leading-none">
+              Grades 6+
+            </div>
+            <div class="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-500 mt-1">
+              Middle &amp; High Schoolers
+            </div>
+          </div>
+
+          <!-- Card 4: Hybrid -->
+          <div class="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 lg:p-4 shadow-xl text-center flex flex-col items-center justify-center transition transform hover:-translate-y-1 duration-200 border border-slate-100">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center mb-1.5 sm:mb-2">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="12" rx="2" />
+                <path d="M2 20h20" />
+                <path d="M12 7a2 2 0 0 1 2 2c0 1.5-2 3.5-2 3.5S10 10.5 10 9a2 2 0 0 1 2-2z" />
+                <circle cx="12" cy="9" r="0.5" fill="currentColor" />
+              </svg>
+            </div>
+            <div class="font-display font-black text-xl sm:text-2xl lg:text-3xl text-slate-900 tracking-tight leading-none">
+              Hybrid
+            </div>
+            <div class="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-500 mt-1">
+              Online + In-Person
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WRAPPER FOR MAIN CONTENT SECTIONS -->
+  <main class="w-full">
+    <!-- Feature Pillars -->
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-4" id="challenge">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-card hover:shadow-xl transition transform hover:-translate-y-1 duration-300 group">
+          <div class="w-12 h-12 rounded-2xl bg-brand-green-subtle text-brand-green flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+            <i data-lucide="lightbulb" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-brand-green bg-brand-green/10 px-2.5 py-1 rounded-full">Phase 1</span>
+          <h3 class="font-display font-extrabold text-xl text-slate-900 mt-3">Idea &amp; Blueprint</h3>
+          <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+            Start from scratch! Identify problems worth solving, design a creative business model, and map out your revenue strategy with guidance.
+          </p>
+        </div>
+        <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-card hover:shadow-xl transition transform hover:-translate-y-1 duration-300 group">
+          <div class="w-12 h-12 rounded-2xl bg-brand-yellow-light text-brand-yellow flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+            <i data-lucide="users" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full">Phase 2</span>
+          <h3 class="font-display font-extrabold text-xl text-slate-900 mt-3">1-Week Mentor Prep</h3>
+          <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+            Access expert coaches, rehearse your storytelling hook, build your slide deck, and get feedback to make your pitch unforgettable.
+          </p>
+        </div>
+        <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-card hover:shadow-xl transition transform hover:-translate-y-1 duration-300 group" id="prize">
+          <div class="w-12 h-12 rounded-2xl bg-brand-pink-light text-brand-pink flex items-center justify-center mb-5 group-hover:scale-110 transition duration-300">
+            <i data-lucide="trophy" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-pink-600 bg-pink-100 px-2.5 py-1 rounded-full">Phase 3</span>
+          <h3 class="font-display font-extrabold text-xl text-slate-900 mt-3">Tournament Pitch &amp; $250</h3>
+          <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+            Compete in live bracket judging! Top pitch wins the <strong>$250 cash prize</strong>, seed funding micro-grants, and executive alumni credentials.
+          </p>
+        </div>
+      </div>
+    </section>
+        <!-- MAIN REGISTRATION SECTION -->
+        <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="register">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- LEFT: REGISTRATION FORM & CONFIRMATION (7 cols) -->
+                <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-9 border border-slate-200/90 shadow-card">
+                    <!-- Form Header Area -->
+                    <div id="form-header-area">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-green bg-brand-green/10 px-3 py-1 rounded-full">
+                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                Registration Form
+                            </span>
+                            <!-- Auto Country Pill -->
+                            <div id="country-pill" class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                                <span id="country-flag">🌐</span>
+                                <span id="country-name">Detecting origin...</span>
+                            </div>
+                        </div>
+                        <h2 class="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                            Register for the Pitch Challenge
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                            Fill in the exact fields below. All submissions are forwarded directly to the ABLE program coordinators at
+                            <strong>alfaizablebusines@gmail.com</strong>
+                            via Web3Forms.
+                        </p>
+                    </div>
+                    <!-- FORM CONTENT -->
+                    <form id="registration-form" class="mt-8 space-y-6">
+                        <!-- Web3Forms Integration to alfaizablebusines@gmail.com -->
+                        <!-- Access Key: 790ef150-22d9-4c60-900d-c3ca4fe68f73 -->
+                        <input
+                            type="hidden"
+                            name="access_key"
+                            id="web3forms_key"
+                            value="790ef150-22d9-4c60-900d-c3ca4fe68f73"
+                        >
+                        <input type="hidden" name="from_name" value="ABLE Nonprofit Portal">
+                        <input type="hidden" name="subject" value="🚀 New Startup Challenge Registration - ABLE">
+                        <input
+                            type="hidden"
+                            name="detected_country"
+                            id="hidden_country"
+                            value="United States"
+                        >
+                        <input type="hidden" name="event_timeline" value="November 2026">
+                        <input
+                            type="hidden"
+                            name="timestamp"
+                            id="hidden_timestamp"
+                            value=""
+                        >
+                        <!-- 1. Full Name (Text input) -->
+                        <div>
+                            <label for="fullName" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                1. Full Name
+                                <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i data-lucide="user" class="w-4 h-4"></i>
+                                </div>
+                                <input
+                                    type="text"
+                                    id="fullName"
+                                    name="name"
+                                    required
+                                    placeholder="e.g. Jordan Miller"
+                                    class="w-full pl-10 pr-4 py-3 bg-slate-50/80 hover:bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition"
+                                >
+                            </div>
+                        </div>
+                        <!-- 2. Email Address (Email input) -->
+                        <div>
+                            <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                2. Email Address
+                                <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                </div>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    required
+                                    placeholder="student@example.com (or parent/guardian email)"
+                                    class="w-full pl-10 pr-4 py-3 bg-slate-50/80 hover:bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green focus:border-transparent transition"
+                                >
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-1">We will email your prep pack, schedule, and Zoom credentials here.</p>
+                        </div>
+                        <!-- 3. Grade Level (Dropdown: 6th, 7th, 8th, Freshman, Sophomore, Junior, Senior) -->
+                        <div>
+                            <label for="gradeLevel" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                3. Grade Level
+                                <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                                </div>
+                                <select
+                                    id="gradeLevel"
+                                    name="grade_level"
+                                    required
+                                    class="w-full pl-10 pr-8 py-3 bg-slate-50/80 hover:bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green transition appearance-none cursor-pointer"
+                                >
+                                    <option value="" disabled selected>Select your current grade level...</option>
+                                    <option value="6th Grade">6th Grade</option>
+                                    <option value="7th Grade">7th Grade</option>
+                                    <option value="8th Grade">8th Grade</option>
+                                    <option value="Freshman (9th Grade)">Freshman (9th Grade)</option>
+                                    <option value="Sophomore (10th Grade)">Sophomore (10th Grade)</option>
+                                    <option value="Junior (11th Grade)">Junior (11th Grade)</option>
+                                    <option value="Senior (12th Grade)">Senior (12th Grade)</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 4. Planning to compete in STARTUP program? (Yes, No, Maybe) -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                4. Planning to compete in STARTUP program?
+                                <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="competing_status"
+                                        value="Yes"
+                                        required
+                                        class="peer sr-only"
+                                    >
+                                    <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 text-slate-700 text-xs font-bold text-center peer-checked:border-brand-green peer-checked:bg-brand-green/10 peer-checked:text-brand-green-dark transition flex items-center justify-center gap-1.5">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-green"></i>
+                                        Yes, Competing
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="competing_status"
+                                        value="Maybe"
+                                        class="peer sr-only"
+                                    >
+                                    <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 text-slate-700 text-xs font-bold text-center peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-800 transition flex items-center justify-center gap-1.5">
+                                        <i data-lucide="help-circle" class="w-4 h-4 text-amber-500"></i>
+                                        Maybe / Observing
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="competing_status"
+                                        value="No"
+                                        class="peer sr-only"
+                                    >
+                                    <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70 text-slate-700 text-xs font-bold text-center peer-checked:border-slate-400 peer-checked:bg-slate-100 peer-checked:text-slate-800 transition flex items-center justify-center gap-1.5">
+                                        <i data-lucide="x" class="w-4 h-4 text-slate-400"></i>
+                                        No (Auditing)
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- 5. Colorado Springs venue attendance option? (Yes, No - online works best) -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                5. Colorado Springs venue attendance option?
+                                <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <label class="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="venue_attendance"
+                                        value="Yes (In-Person in Colorado Springs)"
+                                        required
+                                        class="peer sr-only"
+                                    >
+                                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 text-slate-700 text-xs font-bold peer-checked:border-brand-green peer-checked:bg-brand-green/10 peer-checked:text-brand-green-dark transition flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                                            <i data-lucide="map-pin" class="w-4 h-4 text-brand-green"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold">Yes (In-Person)</div>
+                                            <div class="text-[11px] text-slate-500 font-normal">Colorado Springs Venue</div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="venue_attendance"
+                                        value="No - Online Zoom works best"
+                                        class="peer sr-only"
+                                    >
+                                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 text-slate-700 text-xs font-bold peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-900 transition flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                                            <i data-lucide="video" class="w-4 h-4 text-sky-500"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold">No - Online Works Best</div>
+                                            <div class="text-[11px] text-slate-500 font-normal">Zoom Livestream Stream</div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- 6. Auto-detected Country Notice -->
+                        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="globe" class="w-4 h-4 text-brand-green"></i>
+                                <span>
+                                    Auto-Detected Region:
+                                    <strong id="detected-country-text" class="text-slate-900">United States</strong>
+                                </span>
+                            </div>
+                            <button type="button" onclick="editCountryPrompt()" class="text-brand-green hover:underline font-bold text-xs">
+                                Change
+                            </button>
+                        </div>
+                        <!-- Submit Button -->
+                        <button type="submit" id="submit-btn" class="w-full py-4 px-6 rounded-2xl bg-brand-green hover:bg-brand-green-dark text-white font-display font-extrabold text-base shadow-glow-green transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                            <span id="btn-text">Submit My Registration</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5" id="btn-icon"></i>
+                            <svg
+                                id="btn-spinner"
+                                class="hidden animate-spin h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                ></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </form>
+                    <!-- POST-SUBMISSION SCREEN (Directed to check Gmail inbox) -->
+                    <div id="confirmation-screen" class="hidden space-y-6 pt-2">
+                        <div class="bg-gradient-to-r from-emerald-500/10 via-brand-green/15 to-emerald-500/10 border-2 border-brand-green rounded-3xl p-6 sm:p-7 flex flex-col sm:flex-row items-center sm:items-start gap-4 shadow-soft">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-green text-white flex items-center justify-center shrink-0 shadow-md">
+                                <i data-lucide="mail-check" class="w-6 h-6"></i>
+                            </div>
+                            <div class="text-center sm:text-left space-y-1">
+                                <h3 class="font-display font-black text-xl text-slate-900">
+                                    You're registered!
+                                </h3>
+                                <p class="text-sm font-bold text-brand-green-dark">
+                                    Please check your Gmail / Email inbox right away for event details and prep materials.
+                                </p>
+                                <p class="text-xs text-slate-600 pt-1 leading-relaxed">
+                                    Your submission has been dispatched directly to the ABLE program coordinators at
+                                    <strong>alfaizablebusines@gmail.com</strong>
+                                    . You can save or print your official competitor pass below.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- DIGITAL EVENT PASS -->
+                        <div id="printable-ticket" class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-card border-2 border-brand-green/30 relative overflow-hidden">
+                            <!-- Cutout Circles -->
+                            <div class="hidden sm:block absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-slate-200 z-10"></div>
+                            <div class="hidden sm:block absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-slate-200 z-10"></div>
+                            <div class="flex items-center justify-between border-b border-slate-700/80 pb-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center">
+                                        <img
+                                            src="logo.png"
+                                            alt="ABLE"
+                                            class="w-full h-full object-contain"
+                                            onerror="this.src='assets/logo.png'"
+                                        >
+                                    </div>
+                                    <div>
+                                        <div class="font-display font-black text-lg text-white">STARTUP PITCH PASS</div>
+                                        <div class="text-[10px] text-brand-green font-bold uppercase tracking-wider">ABLE Youth Tournament</div>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-brand-green/20 text-brand-green border border-brand-green/40 text-xs font-mono font-bold rounded-full" id="ticket-id">
+                                    ABLE-PITCH-9142
+                                </span>
+                            </div>
+                            <div class="py-6 grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+                                <div class="sm:col-span-2 space-y-3.5">
+                                    <div>
+                                        <span class="text-[11px] text-slate-400 uppercase font-semibold">Competitor Name</span>
+                                        <div class="text-2xl font-black font-display text-white" id="ticket-name">Jordan Miller</div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3 text-xs">
+                                        <div>
+                                            <span class="text-slate-400">Grade Level:</span>
+                                            <div class="text-slate-200 font-bold mt-0.5" id="ticket-grade">Freshman</div>
+                                        </div>
+                                        <div>
+                                            <span class="text-slate-400">Competing Status:</span>
+                                            <div class="text-brand-green font-bold mt-0.5" id="ticket-status">Yes, Competing</div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3 text-xs">
+                                        <div>
+                                            <span class="text-slate-400">Venue Choice:</span>
+                                            <div class="text-slate-200 font-bold mt-0.5" id="ticket-venue">In-Person (Colorado Springs)</div>
+                                        </div>
+                                        <div>
+                                            <span class="text-slate-400">Event Date:</span>
+                                            <div class="text-amber-400 font-bold mt-0.5">November 2026</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- QR Code -->
+                                <div class="flex flex-col items-center justify-center p-3.5 bg-white rounded-2xl text-slate-900 shadow-md">
+                                    <img
+                                        id="ticket-qr"
+                                        src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=ABLE-PITCH-VALID"
+                                        alt="QR Code"
+                                        class="w-24 h-24 object-contain"
+                                    >
+                                    <span class="text-[9px] font-mono font-bold text-slate-500 mt-1.5 uppercase tracking-wider">Tournament Entry</span>
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-dashed border-slate-700/80 flex items-center justify-between text-xs text-slate-400">
+                                <span>$250 First Place Cash Prize Challenge</span>
+                                <span class="text-amber-400 font-semibold">November 2026 Hybrid</span>
+                            </div>
+                        </div>
+                        <!-- Buttons -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 no-print">
+                            <button type="button" onclick="window.print()" class="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+                                <i data-lucide="printer" class="w-4 h-4 text-brand-green"></i>
+                                <span>Print / Download Ticket</span>
+                            </button>
+                            <button type="button" onclick="resetForNewRegistration()" class="w-full py-3.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 transition">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                <span>Register Another Student</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- RIGHT: EVENT SCHEDULE & DETAILS (5 cols) -->
+                <div class="lg:col-span-5 space-y-6">
+                    <!-- Grand Prize Card -->
+                    <div class="bg-gradient-to-br from-amber-500/10 via-amber-50 to-white rounded-3xl p-6 sm:p-7 border border-amber-200/90 shadow-soft">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-glow-yellow">
+                                <i data-lucide="trophy" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">Top Award</span>
+                                <h3 class="font-display font-black text-2xl text-slate-900 mt-0.5">$250 Cash Prize</h3>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            1st place receives
+                            <strong>$250 in cash seed funding</strong>
+                            , executive mentorship, and official venture certificate from ABLE.
+                        </p>
+                    </div>
+                    <!-- 1-Week Schedule Breakdown -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-soft space-y-4" id="schedule">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-brand-green-subtle text-brand-green flex items-center justify-center">
+                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display font-bold text-lg text-slate-900">1-Week Prep Schedule</h3>
+                                <p class="text-xs text-slate-500">November 2026 Timeline</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 pt-1">
+                            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <span class="font-mono text-xs font-black text-brand-green bg-brand-green/10 px-2.5 py-1 rounded-lg shrink-0">Day 1</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900">Idea Kickoff & Blueprint</h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">Learn how to identify problems and draft a 1-page business canvas.</p>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <span class="font-mono text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-1 rounded-lg shrink-0">Day 2-4</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900">Mentor Coaching Sessions</h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">Virtual drop-in hours with business mentors to review your deck & pricing.</p>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                                <span class="font-mono text-xs font-black text-pink-600 bg-pink-100 px-2.5 py-1 rounded-lg shrink-0">Day 5</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900">Pitch Rehearsals</h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">Practice delivery, executive presentation slides, and timing.</p>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-brand-green/10 border border-brand-green/20 flex items-start gap-3">
+                                <span class="font-mono text-xs font-black text-brand-green-dark bg-white px-2.5 py-1 rounded-lg shrink-0">Day 7</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900">Live Tournament Pitch & $250 Award</h4>
+                                    <p class="text-[11px] text-slate-600 mt-0.5">Hybrid judging in Colorado Springs & Zoom Livestream.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Venue Hybrid Info -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-soft space-y-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display font-bold text-base text-slate-900">Colorado Springs & Online Zoom</h3>
+                                <p class="text-xs text-slate-500">Accessible from anywhere</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Compete live in-person in Colorado Springs or participate 100% virtually via Zoom from anywhere in the world.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+  </main>
+        <!-- FOOTER -->
+        <footer class="bg-white border-t border-slate-200/80 py-10 text-slate-500 text-xs mt-auto">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <img
+                        src="logo.png"
+                        alt="ABLE Logo"
+                        class="w-8 h-8 object-contain"
+                        onerror="this.src='assets/logo.png'"
+                    >
+                    <span class="font-bold text-slate-900">ABLE Non-Profit Initiative</span>
+                    <span>•</span>
+                    <span>Empowering Young Entrepreneurs Everywhere</span>
+                </div>
+                <div class="flex items-center gap-5">
+                    <a href="#challenge" class="hover:text-slate-900 transition">About Challenge</a>
+                    <a href="#register" class="hover:text-slate-900 transition">Register</a>
+                    <a href="#faq" class="hover:text-slate-900 transition">FAQ</a>
+                </div>
+            </div>
+        </footer>
+        <!-- ============================================================ -->
+        <!-- AI VIRTUAL ASSISTANT WIDGET WITH VOICE (SpeechSynthesis)     -->
+        <!-- ============================================================ -->
+        <div id="ai-assistant-root" class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+            <!-- Assistant Dialog Box -->
+            <div id="ai-chat-window" class="hidden mb-3 w-[350px] sm:w-[380px] bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden flex flex-col transition-all duration-300 transform origin-bottom-right">
+                <!-- Chat Header with Voice Toggle -->
+                <div class="bg-slate-900 text-white p-4 flex items-center justify-between border-b border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-brand-green/20 text-brand-green flex items-center justify-center font-bold text-sm">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="font-display font-bold text-sm flex items-center gap-1.5">
+                                ABLE Event AI
+                                <span class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>
+                            </div>
+                            <div class="text-[10px] text-slate-400">Voice-enabled assistant</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <!-- Voice Toggle Button -->
+                        <button
+                            type="button"
+                            id="voice-toggle-btn"
+                            onclick="toggleSpeechOutput()"
+                            class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-brand-green font-bold flex items-center gap-1 transition"
+                            title="Toggle Voice Speech Synthesis"
+                        >
+                            <i data-lucide="volume-2" class="w-3.5 h-3.5" id="voice-icon"></i>
+                            <span id="voice-status-text" class="text-[10px]">Voice ON</span>
+                        </button>
+                        <button onclick="toggleAiAssistant()" class="text-slate-400 hover:text-white p-1 rounded-lg transition">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Messages Stream -->
+                <div id="ai-messages-container" class="p-4 space-y-3 h-72 overflow-y-auto text-xs custom-scroll bg-slate-50/50">
+                    <!-- Default Greeting -->
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-6 h-6 rounded-lg bg-brand-green text-white flex items-center justify-center shrink-0 text-[10px]">
+                            AI
+                        </div>
+                        <div class="p-3 bg-white rounded-2xl rounded-tl-sm border border-slate-200/80 shadow-sm text-slate-700 leading-relaxed">
+                            👋 Hello! I am the ABLE Virtual Assistant with voice speech. Ask me about the
+                            <strong>$250 prize</strong>
+                            , November 2026 dates, or who is eligible to enter!
+                        </div>
+                    </div>
+                </div>
+                <!-- Quick Question Pills -->
+                <div class="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto text-[11px] whitespace-nowrap custom-scroll">
+                    <button onclick="askAiPreset('What is the prize?')" class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium hover:bg-amber-100 transition">
+                        🏆 $250 Prize
+                    </button>
+                    <button onclick="askAiPreset('When does it happen?')" class="px-2.5 py-1 rounded-full bg-brand-green/10 text-brand-green-dark border border-brand-green/20 font-medium hover:bg-brand-green/20 transition">
+                        📅 November 2026
+                    </button>
+                    <button onclick="askAiPreset('Who can participate?')" class="px-2.5 py-1 rounded-full bg-brand-green/10 text-brand-green-dark border border-brand-green/20 font-medium hover:bg-brand-green/20 transition">
+                        🎓 Grades 6+
+                    </button>
+                    <button onclick="askAiPreset('Can I join online?')" class="px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200 font-medium hover:bg-sky-100 transition">
+                        💻 Online / CO Springs
+                    </button>
+                </div>
+                <!-- Chat Input Area -->
+                <form id="ai-input-form" onsubmit="handleAiSubmit(event)" class="p-3 bg-white border-t border-slate-200/80 flex items-center gap-2">
+                    <input
+                        type="text"
+                        id="ai-user-input"
+                        placeholder="Ask a question..."
+                        class="flex-1 px-3.5 py-2 bg-slate-100 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-green"
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="w-8 h-8 rounded-xl bg-brand-green text-white flex items-center justify-center hover:bg-brand-green-dark transition shadow-sm shrink-0">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    </button>
+                </form>
+            </div>
+            <!-- Floating Toggle Button -->
+            <button type="button" onclick="toggleAiAssistant()" class="flex items-center gap-2.5 px-4 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xl transition transform hover:scale-105 active:scale-95 border border-slate-700">
+                <div class="relative flex items-center justify-center">
+                    <div class="w-6 h-6 rounded-lg bg-brand-green text-white flex items-center justify-center">
+                        <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <span class="absolute -top-1 -right-1 flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-green opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-green"></span>
+                    </span>
+                </div>
+                <span class="hidden sm:inline">Event AI (Voice)</span>
+            </button>
+        </div>
+        <!-- ============================================================ -->
+        <!-- JAVASCRIPT APPLICATION LOGIC & VOICE ENGINE                  -->
+        <!-- ============================================================ -->
+        <script src="js/app.js"></script>
+    </body>
+</html>

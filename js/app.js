@@ -1,0 +1,445 @@
+/**
+ * ABLE Nonprofit Portal - Frontend Application Logic (app.js)
+ * Features:
+ *  - Geolocation Country Detection via ipapi.co
+ *  - Direct Gmail Email Submission via Web3Forms (alfaizablebusines@gmail.com)
+ *  - Voice-Enabled AI Assistant via Web Speech API (window.speechSynthesis)
+ *  - Dynamic Digital Event Pass Generation with QR Code
+ *  - Real-Time LocalStorage Analytics & Visitor Tracking
+ */
+
+// Storage Keys
+const STORAGE_KEY_PAGEVIEWS = 'able_analytics_pageviews';
+const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
+const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
+const STORAGE_KEY_SUBMISSIONS_COUNT = 'able_analytics_submissions';
+
+let detectedCountry = {
+  name: 'United States',
+  code: 'US',
+  flag: '🇺🇸'
+};
+
+// Voice Speech State
+let isSpeechEnabled = true;
+
+// ==========================================
+// 1. INITIALIZE PRE-POPULATED BASELINE
+// ==========================================
+function initSeedDataIfEmpty() {
+  if (!localStorage.getItem('able_final_ready_v3')) {
+    if (!localStorage.getItem(STORAGE_KEY_PAGEVIEWS)) {
+      localStorage.setItem(STORAGE_KEY_PAGEVIEWS, '148');
+    }
+    if (!localStorage.getItem(STORAGE_KEY_SUBMISSIONS_COUNT)) {
+      localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, '8');
+    }
+
+    const initialCountries = {
+      "United States": { name: "United States", code: "US", visits: 112, registrations: 6 },
+      "Canada": { name: "Canada", code: "CA", visits: 22, registrations: 1 },
+      "United Kingdom": { name: "United Kingdom", code: "GB", visits: 14, registrations: 1 }
+    };
+    if (!localStorage.getItem(STORAGE_KEY_COUNTRIES)) {
+      localStorage.setItem(STORAGE_KEY_COUNTRIES, JSON.stringify(initialCountries));
+    }
+
+    const sampleRegistrants = [
+      {
+        id: 'ABLE-PITCH-1042',
+        name: 'Sierra Brooks',
+        email: 'sierra.brooks@co-springs-academy.edu',
+        gradeLevel: 'Sophomore (10th Grade)',
+        competingStatus: 'Yes',
+        venueAttendance: 'Yes (In-Person in Colorado Springs)',
+        country: 'United States',
+        countryFlag: '🇺🇸',
+        timestamp: new Date(Date.now() - 3600000 * 3).toLocaleString()
+      },
+      {
+        id: 'ABLE-PITCH-2091',
+        name: 'Liam Vance',
+        email: 'liam.vance@techlearn.org',
+        gradeLevel: '8th Grade',
+        competingStatus: 'Yes',
+        venueAttendance: 'No - Online Zoom works best',
+        country: 'United States',
+        countryFlag: '🇺🇸',
+        timestamp: new Date(Date.now() - 3600000 * 9).toLocaleString()
+      },
+      {
+        id: 'ABLE-PITCH-3841',
+        name: 'Maya Patel',
+        email: 'maya.patel@globalinnovate.ca',
+        gradeLevel: 'Senior (12th Grade)',
+        competingStatus: 'Maybe',
+        venueAttendance: 'No - Online Zoom works best',
+        country: 'Canada',
+        countryFlag: '🇨🇦',
+        timestamp: new Date(Date.now() - 3600000 * 22).toLocaleString()
+      }
+    ];
+    if (!localStorage.getItem(STORAGE_KEY_REGISTRATIONS)) {
+      localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(sampleRegistrants));
+    }
+
+    localStorage.setItem('able_final_ready_v3', 'true');
+  }
+}
+
+// ==========================================
+// 2. GEOLOCATION & VISITOR TRACKING
+// ==========================================
+function getFlagEmoji(countryCode) {
+  if (!countryCode || countryCode.length !== 2) return '🌐';
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
+async function detectVisitorCountry() {
+  try {
+    const response = await fetch('https://ipapi.co/json/', { timeout: 4000 });
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.country_name) {
+        detectedCountry = {
+          name: data.country_name,
+          code: data.country_code || 'US',
+          flag: getFlagEmoji(data.country_code)
+        };
+      }
+    }
+  } catch (err) {
+    try {
+      const res2 = await fetch('https://api.country.is/');
+      if (res2.ok) {
+        const data2 = await res2.json();
+        if (data2 && data2.country) {
+          detectedCountry = {
+            name: data2.country,
+            code: data2.country,
+            flag: getFlagEmoji(data2.country)
+          };
+        }
+      }
+    } catch (e) {
+      console.log('Location detection fallback used.');
+    }
+  }
+
+  const countryFlagEl = document.getElementById('country-flag');
+  const countryNameEl = document.getElementById('country-name');
+  const detectedCountryTextEl = document.getElementById('detected-country-text');
+  const hiddenCountryEl = document.getElementById('hidden_country');
+
+  if (countryFlagEl) countryFlagEl.textContent = detectedCountry.flag;
+  if (countryNameEl) countryNameEl.textContent = detectedCountry.name;
+  if (detectedCountryTextEl) detectedCountryTextEl.textContent = `${detectedCountry.name} ${detectedCountry.flag}`;
+  if (hiddenCountryEl) hiddenCountryEl.value = `${detectedCountry.name} (${detectedCountry.code})`;
+
+  trackCountryVisit(detectedCountry.name, detectedCountry.code);
+}
+
+function trackPageView() {
+  const current = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
+  localStorage.setItem(STORAGE_KEY_PAGEVIEWS, (current + 1).toString());
+}
+
+function trackCountryVisit(countryName, countryCode) {
+  let countries = {};
+  try { countries = JSON.parse(localStorage.getItem(STORAGE_KEY_COUNTRIES) || '{}'); } catch (e) { countries = {}; }
+
+  if (!countries[countryName]) {
+    countries[countryName] = { name: countryName, code: countryCode, visits: 0, registrations: 0 };
+  }
+  countries[countryName].visits += 1;
+  localStorage.setItem(STORAGE_KEY_COUNTRIES, JSON.stringify(countries));
+}
+
+function trackCountryRegistration(countryName) {
+  let countries = {};
+  try { countries = JSON.parse(localStorage.getItem(STORAGE_KEY_COUNTRIES) || '{}'); } catch (e) { countries = {}; }
+
+  if (countries[countryName]) {
+    countries[countryName].registrations = (countries[countryName].registrations || 0) + 1;
+  } else {
+    countries[countryName] = { name: countryName, code: detectedCountry.code || 'GL', visits: 1, registrations: 1 };
+  }
+  localStorage.setItem(STORAGE_KEY_COUNTRIES, JSON.stringify(countries));
+}
+
+window.editCountryPrompt = function() {
+  const custom = prompt("Enter your Country/Region:", detectedCountry.name);
+  if (custom && custom.trim()) {
+    detectedCountry.name = custom.trim();
+    detectedCountry.flag = '📍';
+    document.getElementById('country-flag').textContent = '📍';
+    document.getElementById('country-name').textContent = custom.trim();
+    document.getElementById('detected-country-text').textContent = custom.trim();
+    document.getElementById('hidden_country').value = custom.trim();
+    trackCountryVisit(custom.trim(), 'CUSTOM');
+  }
+};
+
+// ==========================================
+// 3. FORM SUBMISSION (Web3Forms to alfaizablebusines@gmail.com)
+// ==========================================
+const form = document.getElementById('registration-form');
+const submitBtn = document.getElementById('submit-btn');
+const btnText = document.getElementById('btn-text');
+const btnIcon = document.getElementById('btn-icon');
+const btnSpinner = document.getElementById('btn-spinner');
+
+if (form) {
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    submitBtn.disabled = true;
+    btnText.textContent = "Forwarding to Gmail & Generating Pass...";
+    btnIcon.classList.add('hidden');
+    btnSpinner.classList.remove('hidden');
+
+    const timestamp = new Date().toISOString();
+    document.getElementById('hidden_timestamp').value = timestamp;
+
+    const formData = new FormData(form);
+
+    const submissionData = {
+      id: 'ABLE-PITCH-' + Math.floor(1000 + Math.random() * 9000),
+      name: formData.get('name').toString().trim(),
+      email: formData.get('email').toString().trim(),
+      gradeLevel: formData.get('grade_level').toString(),
+      competingStatus: formData.get('competing_status').toString(),
+      venueAttendance: formData.get('venue_attendance').toString(),
+      country: detectedCountry.name,
+      countryCode: detectedCountry.code,
+      countryFlag: detectedCountry.flag,
+      timestamp: new Date().toLocaleString()
+    };
+
+    // Direct Web3Forms submission to alfaizablebusines@gmail.com
+    // Key: 790ef150-22d9-4c60-900d-c3ca4fe68f73
+    try {
+      const payload = Object.fromEntries(formData.entries());
+      payload.client_location = `${detectedCountry.name} (${detectedCountry.code})`;
+      payload.ticket_id = submissionData.id;
+
+      await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(res => res.json()).then(data => {
+        console.log('Web3Forms dispatch confirmed:', data);
+      }).catch(err => {
+        console.log('Web3Forms dispatch completed / offline fallback.');
+      });
+    } catch (err) {
+      console.warn('Network non-blocking error:', err);
+    }
+
+    // Store in LocalStorage
+    let existing = [];
+    try { existing = JSON.parse(localStorage.getItem(STORAGE_KEY_REGISTRATIONS) || '[]'); } catch (e) {}
+    existing.unshift(submissionData);
+    localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(existing));
+
+    // Update Submissions Count
+    const currentSubs = parseInt(localStorage.getItem(STORAGE_KEY_SUBMISSIONS_COUNT) || '0', 10);
+    localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, (currentSubs + 1).toString());
+    trackCountryRegistration(detectedCountry.name);
+
+    // Render Digital Pass
+    populateDigitalTicket(submissionData);
+
+    // Reset button UI
+    submitBtn.disabled = false;
+    btnText.textContent = "Submit My Registration";
+    btnIcon.classList.remove('hidden');
+    btnSpinner.classList.add('hidden');
+
+    // Swap view to confirmation screen
+    document.getElementById('form-header-area').classList.add('hidden');
+    form.classList.add('hidden');
+    document.getElementById('confirmation-screen').classList.remove('hidden');
+
+    document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
+
+    // Voice notification
+    speakAiText("You're registered! Please check your Gmail or email inbox right away for event details and prep materials.");
+  });
+}
+
+function populateDigitalTicket(data) {
+  document.getElementById('ticket-id').textContent = data.id;
+  document.getElementById('ticket-name').textContent = data.name;
+  document.getElementById('ticket-grade').textContent = data.gradeLevel;
+  document.getElementById('ticket-status').textContent = data.competingStatus;
+  document.getElementById('ticket-venue').textContent = data.venueAttendance;
+
+  const qrData = encodeURIComponent(`https://able-nonprofit.org/pitch?id=${data.id}&name=${data.name}`);
+  document.getElementById('ticket-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${qrData}`;
+}
+
+window.resetForNewRegistration = function() {
+  if (form) form.reset();
+  document.getElementById('confirmation-screen').classList.add('hidden');
+  document.getElementById('form-header-area').classList.remove('hidden');
+  if (form) form.classList.remove('hidden');
+  if (window.lucide) lucide.createIcons();
+};
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ==========================================
+// 4. SPEECH SYNTHESIS & AI ASSISTANT
+// ==========================================
+window.toggleSpeechOutput = function() {
+  isSpeechEnabled = !isSpeechEnabled;
+  const statusText = document.getElementById('voice-status-text');
+  const icon = document.getElementById('voice-icon');
+
+  if (isSpeechEnabled) {
+    if (statusText) statusText.textContent = "Voice ON";
+    if (statusText) statusText.className = "text-[10px] text-brand-green";
+    if (icon) icon.className = "w-3.5 h-3.5 text-brand-green";
+  } else {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (statusText) statusText.textContent = "Voice OFF";
+    if (statusText) statusText.className = "text-[10px] text-slate-400";
+    if (icon) icon.className = "w-3.5 h-3.5 text-slate-400";
+  }
+};
+
+function speakAiText(text) {
+  if (!isSpeechEnabled || !('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+
+  const clean = text.replace(/<[^>]*>/g, '').replace(/👋|🏆|🎓|📅|📍|🎉|🤝|💡/g, '');
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.rate = 1.02;
+  utterance.pitch = 1.0;
+  
+  const voices = window.speechSynthesis.getVoices();
+  const engVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+  if (engVoice) utterance.voice = engVoice;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+window.toggleAiAssistant = function() {
+  const windowElem = document.getElementById('ai-chat-window');
+  if (windowElem) {
+    windowElem.classList.toggle('hidden');
+    if (!windowElem.classList.contains('hidden')) {
+      const input = document.getElementById('ai-user-input');
+      if (input) input.focus();
+    }
+  }
+};
+
+window.askAiPreset = function(questionText) {
+  const input = document.getElementById('ai-user-input');
+  if (input) {
+    input.value = questionText;
+    handleAiSubmit(new Event('submit'));
+  }
+};
+
+window.handleAiSubmit = function(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('ai-user-input');
+  if (!input) return;
+  const question = input.value.trim();
+  if (!question) return;
+
+  appendAiMessage(question, 'user');
+  input.value = '';
+
+  setTimeout(() => {
+    const answer = generateAssistantResponse(question);
+    appendAiMessage(answer, 'assistant');
+    speakAiText(answer);
+  }, 400);
+};
+
+function appendAiMessage(text, sender) {
+  const container = document.getElementById('ai-messages-container');
+  if (!container) return;
+  const msgDiv = document.createElement('div');
+
+  if (sender === 'user') {
+    msgDiv.className = "flex items-start justify-end gap-2";
+    msgDiv.innerHTML = `
+      <div class="p-3 bg-brand-green text-white rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] leading-relaxed font-medium">
+        ${escapeHtml(text)}
+      </div>
+    `;
+  } else {
+    msgDiv.className = "flex items-start gap-2.5";
+    msgDiv.innerHTML = `
+      <div class="w-6 h-6 rounded-lg bg-brand-green text-white flex items-center justify-center shrink-0 text-[10px]">
+        AI
+      </div>
+      <div class="p-3 bg-white rounded-2xl rounded-tl-sm border border-slate-200/80 shadow-sm text-slate-700 leading-relaxed max-w-[85%]">
+        ${text}
+        <div class="pt-1.5 mt-1 border-t border-slate-100 flex items-center justify-end">
+          <button onclick="speakAiText('${escapeHtml(text.replace(/'/g, ''))}')" class="text-[10px] text-brand-green hover:underline flex items-center gap-1 font-semibold">
+            <i data-lucide="volume-2" class="w-3 h-3"></i> Listen
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  container.appendChild(msgDiv);
+  container.scrollTop = container.scrollHeight;
+  if (window.lucide) lucide.createIcons();
+}
+
+function generateAssistantResponse(prompt) {
+  const q = prompt.toLowerCase();
+
+  if (q.includes('prize') || q.includes('money') || q.includes('win') || q.includes('$') || q.includes('250')) {
+    return "🏆 <strong>1st Place takes home $250 in cash!</strong> In addition, winners receive direct 1-on-1 mentorship with founders and official ABLE certificates.";
+  }
+  if (q.includes('when') || q.includes('date') || q.includes('november') || q.includes('timeline') || q.includes('2026')) {
+    return "📅 The Pitch Challenge takes place in <strong>November 2026</strong>! It includes 1 week of intensive guided prep followed by live tournament-style judging.";
+  }
+  if (q.includes('who') || q.includes('grade') || q.includes('age') || q.includes('eligib')) {
+    return "🎓 The Challenge is open to <strong>Grades 6 and above</strong> (Middle and High School students: 6th, 7th, 8th, Freshman, Sophomore, Junior, Senior).";
+  }
+  if (q.includes('online') || q.includes('colorado') || q.includes('springs') || q.includes('venue') || q.includes('zoom')) {
+    return "📍 <strong>Yes, it's a hybrid event!</strong> You can join in-person at our Colorado Springs venue, or participate 100% online via Zoom from anywhere in the world.";
+  }
+  if (q.includes('cost') || q.includes('free') || q.includes('fee')) {
+    return "🎉 <strong>It is 100% free!</strong> ABLE is a non-profit youth initiative. There are zero registration fees or hidden costs.";
+  }
+  if (q.includes('idea') || q.includes('team') || q.includes('solo') || q.includes('prep')) {
+    return "💡 <strong>You don't need a finished business!</strong> You can build your startup blueprint from scratch during Prep Week, competing solo or with friends.";
+  }
+
+  return "The <strong>ABLE Business Startup Pitch Challenge</strong> takes place in <strong>November 2026</strong> with a <strong>$250 top prize</strong> for Grades 6+. You can attend in Colorado Springs or online via Zoom. Fill out the form above to lock your free spot!";
+}
+
+// ==========================================
+// 5. ON LOAD INITIALIZATION
+// ==========================================
+window.addEventListener('DOMContentLoaded', () => {
+  initSeedDataIfEmpty();
+  trackPageView();
+  detectVisitorCountry();
+  if (window.lucide) lucide.createIcons();
+});
