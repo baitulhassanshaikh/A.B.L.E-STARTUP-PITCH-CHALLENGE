@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
     <head>
         <meta charset="UTF-8">
@@ -615,27 +615,53 @@
     </div>
   </main>
 
-        <!-- FOOTER -->
-        <footer class="bg-white border-t border-slate-200/80 py-10 text-slate-500 text-xs mt-auto">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <img
-                        src="logo.png"
-                        alt="ABLE Logo"
-                        class="w-8 h-8 object-contain"
-                        onerror="this.src='assets/logo.png'"
-                    >
-                    <span class="font-bold text-slate-900">ABLE Non-Profit Initiative</span>
-                    <span>â€¢</span>
-                    <span>Empowering Young Entrepreneurs Everywhere</span>
-                </div>
-                <div class="flex items-center gap-5">
-                    <a href="#challenge" class="hover:text-slate-900 transition">About Challenge</a>
-                    <a href="#register" class="hover:text-slate-900 transition">Register</a>
-                    <a href="#faq" class="hover:text-slate-900 transition">FAQ</a>
-                </div>
-            </div>
-        </footer>
+  <!-- FOOTER (Matching Final Banner Style) -->
+  <footer class="hero-geometric-bg relative text-white w-full border-t-0 mt-0" style="background: linear-gradient(180deg, #064E3B 0%, #04382A 100%);">
+    <!-- Thin Gold Top Border Accent (#FDE68A to #F59E0B) -->
+    <div class="w-full h-[2px] bg-gradient-to-r from-[#FDE68A] via-[#FBBF24] to-[#F59E0B]"></div>
+
+    <!-- Main Footer Content -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      <!-- Left: ABLE Logo + ABLE Non-Profit Initiative, Tagline -->
+      <div class="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-3.5 sm:gap-4 text-center sm:text-left">
+        <div class="w-11 h-11 rounded-2xl bg-white p-1.5 flex items-center justify-center shrink-0 shadow-md">
+          <img src="logo.png" alt="ABLE Logo" class="w-full h-full object-contain" onerror="this.src='assets/logo.png'">
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+            <span class="font-display font-black text-lg text-white tracking-tight">ABLE</span>
+            <span class="text-emerald-300/40 hidden sm:inline">•</span>
+            <span class="font-bold text-xs sm:text-sm text-emerald-200">Non-Profit Initiative</span>
+          </div>
+          <p class="text-xs text-emerald-100/75 mt-1 sm:mt-0.5 leading-relaxed max-w-[260px] sm:max-w-none">
+            Empowering Young Entrepreneurs Everywhere
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Links - About Challenge, Register (Full-width buttons on mobile) -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+        <a href="#challenge" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-xs font-bold text-white transition text-center flex items-center justify-center shadow-sm">
+          About Challenge
+        </a>
+        <a href="#register" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-display font-black text-xs transition shadow-md hover:shadow-lg text-center flex items-center justify-center">
+          Register
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Bottom: Copyright 2026 ABLE Academy of Business & Leadership Empowerment -->
+    <div class="border-t border-emerald-800/60 w-full py-4 px-4 sm:px-6 lg:px-8 text-center text-xs text-emerald-200/60 font-medium">
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+        <span>Copyright 2026 ABLE Academy of Business &amp; Leadership Empowerment. All rights reserved.</span>
+        <span class="text-amber-300/80 text-[11px] font-semibold flex items-center justify-center gap-1.5">
+          <span>✦</span> Youth Startup Pitch Challenge
+        </span>
+      </div>
+    </div>
+  </footer>
         <!-- ============================================================ -->
         <!-- AI VIRTUAL ASSISTANT WIDGET WITH VOICE (SpeechSynthesis)     -->
         <!-- ============================================================ -->
