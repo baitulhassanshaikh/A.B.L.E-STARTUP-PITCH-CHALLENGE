@@ -308,7 +308,7 @@ if (form) {
     document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
 
     // Voice & audible notification
-    speakAiText("Mubarak ho! Aapka registration submit ho gaya hai. Details coordinators ko forward kar di gayi hain aur jald hi aapse contact kiya jayega.");
+    speakAiText("Congratulations! Your registration for the ABLE Startup Pitch Challenge has been submitted. Details have been forwarded to our program coordinators, and we will follow up with your prep pack shortly.");
   });
 }
 

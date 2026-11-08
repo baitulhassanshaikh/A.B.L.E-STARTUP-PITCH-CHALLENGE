@@ -476,11 +476,11 @@
             How it works:
           </div>
           <p class="leading-relaxed text-slate-700">
-            Jab koi user kisi bhi mobile ya computer se form submit karega:
+            Whenever a participant submits their registration on any desktop or mobile device:
           </p>
           <ul class="list-disc pl-5 space-y-1 text-slate-700">
-            <li><strong>Admin Live Dashboard:</strong> Data foran yahan bina page reload kiye live reflect hoga aur chime bajega.</li>
-            <li><strong>Student Ko Direct Email:</strong> Student ke email par direct <em>"Mubarak ho! Aapka ABLE Startup Challenge form receive ho gaya hai"</em> chali jayegi.</li>
+            <li><strong>Admin Command Hub:</strong> Submissions reflect immediately in real-time with an audible chime—no page reload necessary.</li>
+            <li><strong>Automated Attendee Confirmation:</strong> The registrant receives an immediate confirmation email with their official entry details, prep schedule, and event links.</li>
           </ul>
         </div>
 
@@ -570,17 +570,18 @@ function doPost(e) {
     sheet.appendRow([ticketId, name, email, grade, status, venue, country, timestamp]);
 
     if (email) {
-      var subject = "Mubarak ho! ABLE Youth Startup Pitch Challenge Registration Confirmed";
-      var body = "Assalam-o-Alaikum / Hello " + name + ",\n\n" +
-                 "Mubarak ho! Aapka ABLE Business Startup Pitch Challenge (November 2026) me registration kamyabi se confirm ho gaya hai.\n\n" +
-                 "Aapke Entry Details:\n" +
+      var subject = "Registration Confirmed: ABLE Business Startup Pitch Challenge 2026";
+      var body = "Dear " + name + ",\n\n" +
+                 "Congratulations! Your registration for the ABLE Business Startup Pitch Challenge (November 2026) has been successfully confirmed.\n\n" +
+                 "Your Official Entry Details:\n" +
                  "• Ticket ID: " + ticketId + "\n" +
-                 "• Name: " + name + "\n" +
+                 "• Participant Name: " + name + "\n" +
                  "• Grade Level: " + grade + "\n" +
-                 "• Venue / Attendance: " + venue + "\n" +
-                 "• Grand Prize: $250 1st Place Cash Prize\n\n" +
-                 "Hum jald hi aapko 1-Week Prep Schedule, Mentor coaching hours aur Zoom/Venue credentials email ke zariye send karenge.\n\n" +
-                 "Best regards,\nABLE Academy of Business & Leadership Empowerment\nalfaizablebusines@gmail.com";
+                 "• Selected Venue: " + venue + "\n" +
+                 "• Grand Prize: $250 1st Place Cash Award\n\n" +
+                 "Next Steps:\n" +
+                 "We will email your 1-Week Prep Schedule, expert mentor coaching sessions, and Colorado Springs venue / Zoom livestream credentials shortly.\n\n" +
+                 "Sincerely,\nABLE Academy of Business & Leadership Empowerment\nalfaizablebusines@gmail.com";
       GmailApp.sendEmail(email, subject, body, { name: "ABLE Youth Initiative", replyTo: "alfaizablebusines@gmail.com" });
     }
     return ContentService.createTextOutput(JSON.stringify({ "result": "success", "id": ticketId })).setMimeType(ContentService.MimeType.JSON);
