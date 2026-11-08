@@ -24,67 +24,42 @@ let detectedCountry = {
 let isSpeechEnabled = true;
 
 // ==========================================
-// 1. INITIALIZE PRE-POPULATED BASELINE
+// 1. CLEANUP DUMMY/MOCK DATA
 // ==========================================
-function initSeedDataIfEmpty() {
-  if (!localStorage.getItem('able_final_ready_v3')) {
-    if (!localStorage.getItem(STORAGE_KEY_PAGEVIEWS)) {
-      localStorage.setItem(STORAGE_KEY_PAGEVIEWS, '148');
-    }
-    if (!localStorage.getItem(STORAGE_KEY_SUBMISSIONS_COUNT)) {
-      localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, '8');
-    }
+function cleanupDummyData() {
+  const dummyNames = [
+    'Sierra Brooks', 'Liam Vance', 'Maya Patel', 
+    'Alex Morgan', 'Jordan Lee', 'David Kim', 
+    'Taylor Swift', 'Ethan Carter', 'Chloe Zhang', 
+    'Test Candidate', 'Test Student'
+  ];
 
-    const initialCountries = {
-      "United States": { name: "United States", code: "US", visits: 112, registrations: 6 },
-      "Canada": { name: "Canada", code: "CA", visits: 22, registrations: 1 },
-      "United Kingdom": { name: "United Kingdom", code: "GB", visits: 14, registrations: 1 }
-    };
-    if (!localStorage.getItem(STORAGE_KEY_COUNTRIES)) {
-      localStorage.setItem(STORAGE_KEY_COUNTRIES, JSON.stringify(initialCountries));
-    }
-
-    const sampleRegistrants = [
-      {
-        id: 'ABLE-PITCH-1042',
-        name: 'Sierra Brooks',
-        email: 'sierra.brooks@co-springs-academy.edu',
-        gradeLevel: 'Sophomore (10th Grade)',
-        competingStatus: 'Yes',
-        venueAttendance: 'Yes (In-Person in Colorado Springs)',
-        country: 'United States',
-        countryFlag: '🇺🇸',
-        timestamp: new Date(Date.now() - 3600000 * 3).toLocaleString()
-      },
-      {
-        id: 'ABLE-PITCH-2091',
-        name: 'Liam Vance',
-        email: 'liam.vance@techlearn.org',
-        gradeLevel: '8th Grade',
-        competingStatus: 'Yes',
-        venueAttendance: 'No - Online Zoom works best',
-        country: 'United States',
-        countryFlag: '🇺🇸',
-        timestamp: new Date(Date.now() - 3600000 * 9).toLocaleString()
-      },
-      {
-        id: 'ABLE-PITCH-3841',
-        name: 'Maya Patel',
-        email: 'maya.patel@globalinnovate.ca',
-        gradeLevel: 'Senior (12th Grade)',
-        competingStatus: 'Maybe',
-        venueAttendance: 'No - Online Zoom works best',
-        country: 'Canada',
-        countryFlag: '🇨🇦',
-        timestamp: new Date(Date.now() - 3600000 * 22).toLocaleString()
-      }
-    ];
-    if (!localStorage.getItem(STORAGE_KEY_REGISTRATIONS)) {
-      localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(sampleRegistrants));
-    }
-
-    localStorage.setItem('able_final_ready_v3', 'true');
+  let list = [];
+  try {
+    list = JSON.parse(localStorage.getItem(STORAGE_KEY_REGISTRATIONS) || '[]');
+  } catch (e) {
+    list = [];
   }
+
+  const filtered = list.filter(item => !dummyNames.includes(item.name));
+  if (filtered.length !== list.length) {
+    localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(filtered));
+    localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, filtered.length.toString());
+  }
+
+  // Remove fake pageviews seed if present
+  const views = localStorage.getItem(STORAGE_KEY_PAGEVIEWS);
+  if (views === '148' || views === '149' || views === '150') {
+    localStorage.setItem(STORAGE_KEY_PAGEVIEWS, filtered.length.toString());
+  }
+
+  // Remove fake countries seed if present
+  const countries = JSON.parse(localStorage.getItem(STORAGE_KEY_COUNTRIES) || '{}');
+  if (countries["United States"] && countries["United States"].visits === 112) {
+    localStorage.removeItem(STORAGE_KEY_COUNTRIES);
+  }
+
+  localStorage.removeItem('able_final_ready_v3');
 }
 
 // ==========================================
@@ -561,7 +536,7 @@ function generateAssistantResponse(prompt) {
 // 5. ON LOAD INITIALIZATION
 // ==========================================
 window.addEventListener('DOMContentLoaded', () => {
-  initSeedDataIfEmpty();
+  cleanupDummyData();
   trackPageView();
   detectVisitorCountry();
   if (window.lucide) lucide.createIcons();
