@@ -564,3 +564,11 @@ window.addEventListener('DOMContentLoaded', () => {
   detectVisitorCountry();
   if (window.lucide) lucide.createIcons();
 });
+
+// Secret Admin Key Shortcut (Ctrl + Shift + A)
+window.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+    e.preventDefault();
+    window.location.href = 'admin.html';
+  }
+});

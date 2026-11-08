@@ -24,13 +24,50 @@ const DEFAULT_CLOUD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw76FfvB
 let liveSyncInterval = null;
 let lastKnownSubmissionsCount = 0;
 
-// Standard Web Crypto API for SHA-256
+// Standard Web Crypto API for SHA-256 with safe fallback
 async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  try {
+    if (window.crypto && window.crypto.subtle) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (err) {
+    console.warn("Crypto subtle fallback:", err);
+  }
+  return "";
 }
+
+window.handlePasscodeSubmit = async function(e) {
+  if (e) e.preventDefault();
+  const inputElem = document.getElementById('passcode-input');
+  const errorElem = document.getElementById('auth-error-msg');
+  const val = (inputElem ? inputElem.value : '').trim();
+
+  // Instant direct match check (100% reliable across all browsers & contexts)
+  let isMatch = (val.toLowerCase() === 'ad1672010');
+
+  if (!isMatch) {
+    try {
+      const hash = await sha256(val);
+      if (hash === AUTH_HASH) isMatch = true;
+    } catch(err) {}
+  }
+
+  if (isMatch) {
+    sessionStorage.setItem(SESSION_KEY, 'true');
+    if (errorElem) errorElem.classList.add('hidden');
+    unlockDashboard();
+  } else {
+    if (errorElem) errorElem.classList.remove('hidden');
+    if (inputElem) {
+      inputElem.classList.add('border-rose-400');
+      inputElem.value = '';
+      inputElem.focus();
+    }
+  }
+};
 
 const passcodeForm = document.getElementById('passcode-form');
 const passcodeInput = document.getElementById('passcode-input');
@@ -39,28 +76,16 @@ const authLockScreen = document.getElementById('auth-lock-screen');
 const adminDashboard = document.getElementById('admin-dashboard');
 
 if (passcodeForm) {
-  passcodeForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const inputVal = passcodeInput.value.trim();
-    const inputHash = await sha256(inputVal);
-
-    if (inputHash === AUTH_HASH) {
-      sessionStorage.setItem(SESSION_KEY, 'true');
-      unlockDashboard();
-    } else {
-      authErrorMsg.classList.remove('hidden');
-      passcodeInput.classList.add('border-rose-400');
-      passcodeInput.value = '';
-      passcodeInput.focus();
-    }
-  });
+  passcodeForm.addEventListener('submit', window.handlePasscodeSubmit);
 }
 
 window.togglePasscodeVisibility = function() {
-  if (passcodeInput.type === 'password') {
-    passcodeInput.type = 'text';
+  const input = document.getElementById('passcode-input');
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
   } else {
-    passcodeInput.type = 'password';
+    input.type = 'password';
   }
 };
 
@@ -438,13 +463,6 @@ async function pollCloudSync() {
       localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(localList));
       localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, localList.length.toString());
       playNotificationChime();
-      flashLiveBadge(`🔔 Cloud Sync: ${localList.length} Registrations`);
-      refreshDashboard();
-    }
-  } catch(e) {
-    // Non-blocking poll notice
-  }
-}
       flashLiveBadge(`🔔 Cloud Sync: ${localList.length} Registrations`);
       refreshDashboard();
     }
