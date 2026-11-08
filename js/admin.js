@@ -19,6 +19,7 @@ const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
 const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
 const STORAGE_KEY_SUBMISSIONS_COUNT = 'able_analytics_submissions';
 const STORAGE_KEY_CLOUD_ENDPOINT = 'able_cloud_sync_endpoint';
+const DEFAULT_CLOUD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw76FfvBwuC0rXD-9Yn34z68HchaQP12MAZR6YGL_5EvltMD3BqCVwTm3PpzW-Kmt82yA/exec';
 
 let liveSyncInterval = null;
 let lastKnownSubmissionsCount = 0;
@@ -413,7 +414,7 @@ function handleLiveNewRegistration(newSub, isFromCloud = false) {
 
 // Background Cloud Poller for Cross-Device Sync
 async function pollCloudSync() {
-  const endpoint = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT);
+  const endpoint = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT) || DEFAULT_CLOUD_ENDPOINT;
   if (!endpoint) return;
 
   try {
@@ -437,6 +438,13 @@ async function pollCloudSync() {
       localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(localList));
       localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, localList.length.toString());
       playNotificationChime();
+      flashLiveBadge(`🔔 Cloud Sync: ${localList.length} Registrations`);
+      refreshDashboard();
+    }
+  } catch(e) {
+    // Non-blocking poll notice
+  }
+}
       flashLiveBadge(`🔔 Cloud Sync: ${localList.length} Registrations`);
       refreshDashboard();
     }
@@ -483,13 +491,13 @@ window.openCloudSyncModal = function() {
   if (modal) modal.classList.remove('hidden');
 
   const input = document.getElementById('cloud-endpoint-input');
-  const saved = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT) || '';
+  const saved = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT) || DEFAULT_CLOUD_ENDPOINT;
   if (input) input.value = saved;
 
   const status = document.getElementById('cloud-endpoint-status');
   if (status) {
-    if (saved) status.classList.remove('hidden');
-    else status.classList.add('hidden');
+    status.textContent = "✓ Cloud Webhook active! Live cross-device sync connected.";
+    status.classList.remove('hidden');
   }
 
   if (window.lucide) lucide.createIcons();

@@ -527,18 +527,37 @@
           </div>
 
           <pre class="p-3.5 rounded-2xl bg-slate-900 text-slate-100 font-mono text-[11px] leading-relaxed overflow-x-auto max-h-48 border border-slate-800 custom-scroll"><code id="apps-script-code">// Google Apps Script (Code.gs)
+function getOrCreateSheet() {
+  try {
+    var active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active.getActiveSheet();
+  } catch(e) {}
+  var props = PropertiesService.getScriptProperties();
+  var sheetId = props.getProperty("ABLE_SHEET_ID");
+  if (sheetId) {
+    try {
+      var ss = SpreadsheetApp.openById(sheetId);
+      if (ss) return ss.getActiveSheet();
+    } catch(err) {}
+  }
+  var newSS = SpreadsheetApp.create("ABLE Pitch Registrations - November 2026");
+  var sheet = newSS.getActiveSheet();
+  sheet.appendRow(["Ticket ID", "Full Name", "Email Address", "Grade Level", "Competing Status", "Attendance Venue", "Country", "Timestamp"]);
+  props.setProperty("ABLE_SHEET_ID", newSS.getId());
+  return sheet;
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(10000);
   try {
-    var doc = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = doc.getActiveSheet();
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["Ticket ID", "Full Name", "Email Address", "Grade Level", "Competing Status", "Attendance Venue", "Country", "Timestamp"]);
-    }
+    var sheet = getOrCreateSheet();
     var params = e.parameter || {};
     if (e.postData && e.postData.contents) {
-      try { params = JSON.parse(e.postData.contents); } catch(err) {}
+      try { 
+        var parsed = JSON.parse(e.postData.contents);
+        for (var k in parsed) { params[k] = parsed[k]; }
+      } catch(err) {}
     }
     var ticketId = params.id || params.ticket_id || ("ABLE-PITCH-" + Math.floor(1000 + Math.random() * 9000));
     var name = params.name || "";
@@ -573,15 +592,20 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  var doc = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = doc.getActiveSheet();
-  var rows = sheet.getDataRange().getValues();
-  var list = [];
-  for (var i = 1; i < rows.length; i++) {
-    var r = rows[i];
-    list.push({ id: r[0], name: r[1], email: r[2], gradeLevel: r[3], competingStatus: r[4], venueAttendance: r[5], country: r[6], timestamp: r[7] });
+  try {
+    var sheet = getOrCreateSheet();
+    var rows = sheet.getDataRange().getValues();
+    var list = [];
+    for (var i = 1; i < rows.length; i++) {
+      var r = rows[i];
+      if (r[0]) {
+        list.push({ id: String(r[0]), name: String(r[1]), email: String(r[2]), gradeLevel: String(r[3]), competingStatus: String(r[4]), venueAttendance: String(r[5]), country: String(r[6]), timestamp: String(r[7]) });
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify(list)).setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
   }
-  return ContentService.createTextOutput(JSON.stringify(list)).setMimeType(ContentService.MimeType.JSON);
 }</code></pre>
         </div>
 

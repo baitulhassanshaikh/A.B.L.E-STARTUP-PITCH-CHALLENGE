@@ -13,6 +13,8 @@ const STORAGE_KEY_PAGEVIEWS = 'able_analytics_pageviews';
 const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
 const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
 const STORAGE_KEY_SUBMISSIONS_COUNT = 'able_analytics_submissions';
+const STORAGE_KEY_CLOUD_ENDPOINT = 'able_cloud_sync_endpoint';
+const DEFAULT_CLOUD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw76FfvBwuC0rXD-9Yn34z68HchaQP12MAZR6YGL_5EvltMD3BqCVwTm3PpzW-Kmt82yA/exec';
 
 let detectedCountry = {
   name: 'United States',
@@ -261,7 +263,7 @@ if (form) {
     } catch (e) { }
 
     // Cloud Webhook dispatch (Cross-device real-time sync + Automated Student Email)
-    const cloudEndpoint = localStorage.getItem('able_cloud_sync_endpoint');
+    const cloudEndpoint = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT) || DEFAULT_CLOUD_ENDPOINT;
     if (cloudEndpoint) {
       try {
         fetch(cloudEndpoint, {
