@@ -18,6 +18,10 @@ const STORAGE_KEY_PAGEVIEWS = 'able_analytics_pageviews';
 const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
 const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
 const STORAGE_KEY_SUBMISSIONS_COUNT = 'able_analytics_submissions';
+const STORAGE_KEY_CLOUD_ENDPOINT = 'able_cloud_sync_endpoint';
+
+let liveSyncInterval = null;
+let lastKnownSubmissionsCount = 0;
 
 // Standard Web Crypto API for SHA-256
 async function sha256(message) {
@@ -350,9 +354,191 @@ function cleanupDummyData() {
   localStorage.removeItem('able_final_ready_v3');
 }
 
+// ==========================================
+// LIVE REAL-TIME ENGINE (NO RELOAD NEEDED)
+// ==========================================
+function playNotificationChime() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {
+    console.log("Audio notification skipped:", e);
+  }
+}
+
+function flashLiveBadge(text) {
+  const badge = document.getElementById('live-sync-badge');
+  const textElem = document.getElementById('live-sync-badge-text');
+  if (!badge) return;
+
+  if (textElem) textElem.textContent = text || "New Registration Received!";
+  badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1.5 shadow-md transform scale-105 transition-all";
+
+  setTimeout(() => {
+    badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1.5 shadow-xs transition-all";
+    if (textElem) textElem.textContent = "Live Sync: Active (Auto-sync)";
+  }, 4000);
+}
+
+function handleLiveNewRegistration(newSub, isFromCloud = false) {
+  if (!newSub || !newSub.id) return;
+
+  let list = getStoredRegistrations();
+  const exists = list.some(item => item.id === newSub.id || (item.email === newSub.email && item.timestamp === newSub.timestamp));
+  if (exists) return;
+
+  list.unshift(newSub);
+  localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(list));
+  localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, list.length.toString());
+
+  playNotificationChime();
+  flashLiveBadge(`🔔 ${escapeHtml(newSub.name)} Just Registered!`);
+  refreshDashboard();
+}
+
+// Background Cloud Poller for Cross-Device Sync
+async function pollCloudSync() {
+  const endpoint = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT);
+  if (!endpoint) return;
+
+  try {
+    const res = await fetch(endpoint, { method: 'GET' });
+    if (!res.ok) return;
+    const cloudList = await res.json();
+    if (!Array.isArray(cloudList)) return;
+
+    let localList = getStoredRegistrations();
+    let hasNew = false;
+
+    cloudList.forEach(item => {
+      const exists = localList.some(l => l.id === item.id || (l.email === item.email && l.name === item.name));
+      if (!exists) {
+        localList.unshift(item);
+        hasNew = true;
+      }
+    });
+
+    if (hasNew) {
+      localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(localList));
+      localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, localList.length.toString());
+      playNotificationChime();
+      flashLiveBadge(`🔔 Cloud Sync: ${localList.length} Registrations`);
+      refreshDashboard();
+    }
+  } catch(e) {
+    // Non-blocking poll notice
+  }
+}
+
+function startLiveSync() {
+  // 1. Instant cross-tab/cross-window broadcast channel
+  try {
+    const channel = new BroadcastChannel('able_live_sync_channel');
+    channel.onmessage = (event) => {
+      if (event.data && event.data.type === 'NEW_REGISTRATION') {
+        handleLiveNewRegistration(event.data.data);
+      }
+    };
+  } catch(e) {}
+
+  // 2. Storage event listener (handles other windows on same browser)
+  window.addEventListener('storage', (e) => {
+    if (e.key === STORAGE_KEY_REGISTRATIONS) {
+      refreshDashboard();
+    }
+  });
+
+  // 3. Regular polling interval for cloud and local changes (every 3.5s)
+  if (liveSyncInterval) clearInterval(liveSyncInterval);
+  liveSyncInterval = setInterval(() => {
+    const currentList = getStoredRegistrations();
+    if (currentList.length !== lastKnownSubmissionsCount) {
+      lastKnownSubmissionsCount = currentList.length;
+      refreshDashboard();
+    }
+    pollCloudSync();
+  }, 3500);
+}
+
+// ==========================================
+// CLOUD SYNC MODAL CONTROLS
+// ==========================================
+window.openCloudSyncModal = function() {
+  const modal = document.getElementById('cloud-sync-modal');
+  if (modal) modal.classList.remove('hidden');
+
+  const input = document.getElementById('cloud-endpoint-input');
+  const saved = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT) || '';
+  if (input) input.value = saved;
+
+  const status = document.getElementById('cloud-endpoint-status');
+  if (status) {
+    if (saved) status.classList.remove('hidden');
+    else status.classList.add('hidden');
+  }
+
+  if (window.lucide) lucide.createIcons();
+};
+
+window.closeCloudSyncModal = function() {
+  const modal = document.getElementById('cloud-sync-modal');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.saveCloudEndpoint = function() {
+  const input = document.getElementById('cloud-endpoint-input');
+  if (!input) return;
+  const val = input.value.trim();
+
+  if (val) {
+    localStorage.setItem(STORAGE_KEY_CLOUD_ENDPOINT, val);
+    const status = document.getElementById('cloud-endpoint-status');
+    if (status) {
+      status.textContent = "✓ Cloud Webhook configured! Live cross-device sync is now active.";
+      status.classList.remove('hidden');
+    }
+    pollCloudSync();
+  } else {
+    localStorage.removeItem(STORAGE_KEY_CLOUD_ENDPOINT);
+    const status = document.getElementById('cloud-endpoint-status');
+    if (status) status.classList.add('hidden');
+  }
+};
+
+window.copyAppsScriptCode = function() {
+  const codeElem = document.getElementById('apps-script-code');
+  if (!codeElem) return;
+  navigator.clipboard.writeText(codeElem.innerText).then(() => {
+    const btn = document.getElementById('copy-script-btn');
+    if (btn) {
+      btn.innerHTML = `<span class="text-emerald-400">✓ Copied!</span>`;
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i><span>Copy Code</span>`;
+        if (window.lucide) lucide.createIcons();
+      }, 2500);
+    }
+  });
+};
+
 // On load execution
 window.addEventListener('DOMContentLoaded', () => {
   cleanupDummyData();
   checkAuthOnLoad();
+  startLiveSync();
   if (window.lucide) lucide.createIcons();
 });

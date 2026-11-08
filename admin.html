@@ -152,10 +152,11 @@
             />
           </div>
           <div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <h1 class="font-display font-black text-xl text-slate-900 tracking-tight">ABLE Command Hub</h1>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-green-subtle text-brand-green-dark border border-brand-green/20 uppercase tracking-wider">
-                Live Data
+              <span id="live-sync-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1.5 shadow-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="live-sync-badge-text">Live Sync: Active (Auto-sync)</span>
               </span>
             </div>
             <p class="text-xs text-slate-500">Startup Pitch Challenge Registrant & Traffic Analytics</p>
@@ -163,14 +164,24 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
+          <button 
+            type="button" 
+            onclick="openCloudSyncModal()" 
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 text-xs font-bold border border-sky-200 transition shadow-xs"
+            title="Configure Cloud Live Sync and Student Automated Email"
+          >
+            <i data-lucide="cloud" class="w-3.5 h-3.5 text-sky-600"></i>
+            <span class="hidden sm:inline">Live Cloud &amp; Email</span>
+          </button>
+
           <a 
             href="index.html" 
             target="_blank"
-            class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
+            class="hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
           >
             <i data-lucide="external-link" class="w-3.5 h-3.5 text-brand-green"></i>
-            <span>Public Registration Page</span>
+            <span>Public Page</span>
           </a>
 
           <button 
@@ -433,6 +444,160 @@
       </div>
     </footer>
 
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- CLOUD SYNC & STUDENT AUTO-EMAIL SETUP MODAL                  -->
+  <!-- ============================================================ -->
+  <div id="cloud-sync-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+    <div class="w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto custom-scroll">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+            <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-black text-lg text-slate-900">Live Cloud Sync &amp; Student Auto-Email</h3>
+            <p class="text-xs text-slate-500">Cross-device live real-time sync + Automated Student Confirmation Emails</p>
+          </div>
+        </div>
+        <button onclick="closeCloudSyncModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="py-5 space-y-5 text-xs text-slate-600">
+        
+        <!-- Explanation Box -->
+        <div class="p-4 rounded-2xl bg-sky-50/70 border border-sky-100 space-y-2">
+          <div class="font-bold text-sky-900 flex items-center gap-1.5 text-xs">
+            <i data-lucide="sparkles" class="w-4 h-4 text-sky-600"></i>
+            How it works:
+          </div>
+          <p class="leading-relaxed text-slate-700">
+            Jab koi user kisi bhi mobile ya computer se form submit karega:
+          </p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-700">
+            <li><strong>Admin Live Dashboard:</strong> Data foran yahan bina page reload kiye live reflect hoga aur chime bajega.</li>
+            <li><strong>Student Ko Direct Email:</strong> Student ke email par direct <em>"Mubarak ho! Aapka ABLE Startup Challenge form receive ho gaya hai"</em> chali jayegi.</li>
+          </ul>
+        </div>
+
+        <!-- Webhook URL Configuration -->
+        <div>
+          <label class="block font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+            Google Apps Script / Cloud Webhook URL:
+          </label>
+          <div class="flex gap-2">
+            <input 
+              type="url" 
+              id="cloud-endpoint-input" 
+              placeholder="https://script.google.com/macros/s/.../exec" 
+              class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green font-mono"
+            >
+            <button 
+              type="button" 
+              onclick="saveCloudEndpoint()" 
+              class="px-5 py-2.5 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-bold transition shadow-sm shrink-0"
+            >
+              Save URL
+            </button>
+          </div>
+          <p id="cloud-endpoint-status" class="text-[11px] text-emerald-700 mt-1.5 font-medium hidden">
+            ✓ Cloud Webhook configured! Live sync is active.
+          </p>
+        </div>
+
+        <!-- 30-Second Setup Guide -->
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 uppercase tracking-wider">
+              Google Apps Script Code (Copy &amp; Paste):
+            </span>
+            <button 
+              type="button" 
+              onclick="copyAppsScriptCode()" 
+              id="copy-script-btn"
+              class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] flex items-center gap-1.5 transition"
+            >
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copy Code</span>
+            </button>
+          </div>
+
+          <pre class="p-3.5 rounded-2xl bg-slate-900 text-slate-100 font-mono text-[11px] leading-relaxed overflow-x-auto max-h-48 border border-slate-800 custom-scroll"><code id="apps-script-code">// Google Apps Script (Code.gs)
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {
+    var doc = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = doc.getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["Ticket ID", "Full Name", "Email Address", "Grade Level", "Competing Status", "Attendance Venue", "Country", "Timestamp"]);
+    }
+    var params = e.parameter || {};
+    if (e.postData && e.postData.contents) {
+      try { params = JSON.parse(e.postData.contents); } catch(err) {}
+    }
+    var ticketId = params.id || params.ticket_id || ("ABLE-PITCH-" + Math.floor(1000 + Math.random() * 9000));
+    var name = params.name || "";
+    var email = params.email || "";
+    var grade = params.gradeLevel || params.grade_level || "";
+    var status = params.competingStatus || params.competing_status || "Yes";
+    var venue = params.venueAttendance || params.venue_attendance || "Online Zoom";
+    var country = params.country || "Global";
+    var timestamp = new Date().toLocaleString();
+    sheet.appendRow([ticketId, name, email, grade, status, venue, country, timestamp]);
+
+    if (email) {
+      var subject = "Mubarak ho! ABLE Youth Startup Pitch Challenge Registration Confirmed";
+      var body = "Assalam-o-Alaikum / Hello " + name + ",\n\n" +
+                 "Mubarak ho! Aapka ABLE Business Startup Pitch Challenge (November 2026) me registration kamyabi se confirm ho gaya hai.\n\n" +
+                 "Aapke Entry Details:\n" +
+                 "• Ticket ID: " + ticketId + "\n" +
+                 "• Name: " + name + "\n" +
+                 "• Grade Level: " + grade + "\n" +
+                 "• Venue / Attendance: " + venue + "\n" +
+                 "• Grand Prize: $250 1st Place Cash Prize\n\n" +
+                 "Hum jald hi aapko 1-Week Prep Schedule, Mentor coaching hours aur Zoom/Venue credentials email ke zariye send karenge.\n\n" +
+                 "Best regards,\nABLE Academy of Business & Leadership Empowerment\nalfaizablebusines@gmail.com";
+      GmailApp.sendEmail(email, subject, body, { name: "ABLE Youth Initiative", replyTo: "alfaizablebusines@gmail.com" });
+    }
+    return ContentService.createTextOutput(JSON.stringify({ "result": "success", "id": ticketId })).setMimeType(ContentService.MimeType.JSON);
+  } catch(e) {
+    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": e.toString() })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function doGet(e) {
+  var doc = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = doc.getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  var list = [];
+  for (var i = 1; i < rows.length; i++) {
+    var r = rows[i];
+    list.push({ id: r[0], name: r[1], email: r[2], gradeLevel: r[3], competingStatus: r[4], venueAttendance: r[5], country: r[6], timestamp: r[7] });
+  }
+  return ContentService.createTextOutput(JSON.stringify(list)).setMimeType(ContentService.MimeType.JSON);
+}</code></pre>
+        </div>
+
+      </div>
+
+      <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+        <button 
+          type="button" 
+          onclick="closeCloudSyncModal()" 
+          class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition text-xs"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
   </div>
 
 

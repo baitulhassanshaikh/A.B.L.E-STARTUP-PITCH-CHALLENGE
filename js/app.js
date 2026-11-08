@@ -28,9 +28,9 @@ let isSpeechEnabled = true;
 // ==========================================
 function cleanupDummyData() {
   const dummyNames = [
-    'Sierra Brooks', 'Liam Vance', 'Maya Patel', 
-    'Alex Morgan', 'Jordan Lee', 'David Kim', 
-    'Taylor Swift', 'Ethan Carter', 'Chloe Zhang', 
+    'Sierra Brooks', 'Liam Vance', 'Maya Patel',
+    'Alex Morgan', 'Jordan Lee', 'David Kim',
+    'Taylor Swift', 'Ethan Carter', 'Chloe Zhang',
     'Test Candidate', 'Test Student'
   ];
 
@@ -146,7 +146,7 @@ function trackCountryRegistration(countryName) {
   localStorage.setItem(STORAGE_KEY_COUNTRIES, JSON.stringify(countries));
 }
 
-window.editCountryPrompt = function() {
+window.editCountryPrompt = function () {
   const custom = prompt("Enter your Country/Region:", detectedCountry.name);
   if (custom && custom.trim()) {
     detectedCountry.name = custom.trim();
@@ -169,7 +169,7 @@ const btnIcon = document.getElementById('btn-icon');
 const btnSpinner = document.getElementById('btn-spinner');
 
 if (form) {
-  form.addEventListener('submit', async function(e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     submitBtn.disabled = true;
@@ -242,7 +242,7 @@ if (form) {
 
     // Store in LocalStorage
     let existing = [];
-    try { existing = JSON.parse(localStorage.getItem(STORAGE_KEY_REGISTRATIONS) || '[]'); } catch (e) {}
+    try { existing = JSON.parse(localStorage.getItem(STORAGE_KEY_REGISTRATIONS) || '[]'); } catch (e) { }
     existing.unshift(submissionData);
     localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(existing));
 
@@ -250,6 +250,28 @@ if (form) {
     const currentSubs = parseInt(localStorage.getItem(STORAGE_KEY_SUBMISSIONS_COUNT) || '0', 10);
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, (currentSubs + 1).toString());
     trackCountryRegistration(detectedCountry.name);
+
+    // Broadcast LIVE to Admin tabs immediately (Zero-reload real-time sync)
+    try {
+      const channel = new BroadcastChannel('able_live_sync_channel');
+      channel.postMessage({
+        type: 'NEW_REGISTRATION',
+        data: submissionData
+      });
+    } catch (e) { }
+
+    // Cloud Webhook dispatch (Cross-device real-time sync + Automated Student Email)
+    const cloudEndpoint = localStorage.getItem('able_cloud_sync_endpoint');
+    if (cloudEndpoint) {
+      try {
+        fetch(cloudEndpoint, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionData)
+        }).catch(() => { });
+      } catch (e) { }
+    }
 
     // Update Confirmation Badges
     const badge = document.getElementById('dispatch-badge');
@@ -284,7 +306,7 @@ if (form) {
     document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
 
     // Voice & audible notification
-    speakAiText("You're registered! Your details have been sent to the coordinators at alfaizablebusines@gmail.com. Please check your email inbox and spam folder.");
+    speakAiText("Mubarak ho! Aapka registration submit ho gaya hai. Details coordinators ko forward kar di gayi hain aur jald hi aapse contact kiya jayega.");
   });
 }
 
@@ -302,7 +324,7 @@ function populateDigitalTicket(data) {
   }
 }
 
-window.emailMyPassCopy = function() {
+window.emailMyPassCopy = function () {
   const name = document.getElementById('ticket-name').textContent;
   const id = document.getElementById('ticket-id').textContent;
   const grade = document.getElementById('ticket-grade').textContent;
@@ -326,7 +348,7 @@ window.emailMyPassCopy = function() {
   window.location.href = `mailto:?subject=${subject}&body=${body}`;
 };
 
-window.resetForNewRegistration = function() {
+window.resetForNewRegistration = function () {
   if (form) form.reset();
   document.getElementById('confirmation-screen').classList.add('hidden');
   document.getElementById('form-header-area').classList.remove('hidden');
@@ -357,13 +379,12 @@ function showToast(title, message, type = 'success') {
   }
 
   const toast = document.createElement('div');
-  toast.className = `p-4 rounded-2xl shadow-2xl border text-xs flex items-start gap-3 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto ${
-    type === 'success' 
-      ? 'bg-slate-900 text-white border-emerald-500/50' 
+  toast.className = `p-4 rounded-2xl shadow-2xl border text-xs flex items-start gap-3 transition-all duration-300 transform translate-y-[-10px] opacity-0 pointer-events-auto ${type === 'success'
+      ? 'bg-slate-900 text-white border-emerald-500/50'
       : 'bg-amber-950 text-amber-100 border-amber-500/50'
-  }`;
+    }`;
 
-  const iconSvg = type === 'success' 
+  const iconSvg = type === 'success'
     ? `<div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 font-bold">✓</div>`
     : `<div class="w-6 h-6 rounded-full bg-amber-500 text-slate-900 flex items-center justify-center shrink-0 font-bold">!</div>`;
 
@@ -395,7 +416,7 @@ if ('speechSynthesis' in window) {
   };
 }
 
-window.toggleSpeechOutput = function() {
+window.toggleSpeechOutput = function () {
   isSpeechEnabled = !isSpeechEnabled;
   const statusText = document.getElementById('voice-status-text');
   const icon = document.getElementById('voice-icon');
@@ -424,7 +445,7 @@ function speakAiText(text) {
     const utterance = new SpeechSynthesisUtterance(clean);
     utterance.rate = 1.02;
     utterance.pitch = 1.0;
-    
+
     const voices = window.speechSynthesis.getVoices();
     if (voices && voices.length > 0) {
       const engVoice = voices.find(v => v.lang && v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
@@ -437,7 +458,7 @@ function speakAiText(text) {
   }
 }
 
-window.toggleAiAssistant = function() {
+window.toggleAiAssistant = function () {
   const windowElem = document.getElementById('ai-chat-window');
   if (windowElem) {
     windowElem.classList.toggle('hidden');
@@ -448,7 +469,7 @@ window.toggleAiAssistant = function() {
   }
 };
 
-window.askAiPreset = function(questionText) {
+window.askAiPreset = function (questionText) {
   const input = document.getElementById('ai-user-input');
   if (input) {
     input.value = questionText;
@@ -456,7 +477,7 @@ window.askAiPreset = function(questionText) {
   }
 };
 
-window.handleAiSubmit = function(e) {
+window.handleAiSubmit = function (e) {
   if (e) e.preventDefault();
   const input = document.getElementById('ai-user-input');
   if (!input) return;
