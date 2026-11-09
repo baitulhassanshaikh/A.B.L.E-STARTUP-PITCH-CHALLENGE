@@ -571,6 +571,6 @@ window.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
     e.preventDefault();
-    window.location.href = 'admin.html';
+    window.location.href = 'qwer.html';
   }
 });
