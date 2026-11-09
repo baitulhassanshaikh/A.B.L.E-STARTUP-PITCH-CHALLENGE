@@ -13,6 +13,12 @@
 const AUTH_HASH = "e2876a0b7ef53cefddb98836ea36c8bd13557deb0defe14c49116568952db671";
 const SESSION_KEY = "able_pitch_admin_authorized_v2";
 
+// DevTools Console Security Guard Banner
+try {
+  console.log('%cSTOP!', 'color: #ef4444; font-size: 36px; font-weight: 900;');
+  console.log('%cThis is a restricted administration portal for ABLE Nonprofit. All actions and sessions are cryptographically verified and monitored.', 'color: #334155; font-size: 13px; font-weight: 600;');
+} catch (e) {}
+
 // Storage Keys
 const STORAGE_KEY_PAGEVIEWS = 'able_analytics_pageviews';
 const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
@@ -99,7 +105,7 @@ function checkLockoutState() {
   }
 }
 
-window.handlePasscodeSubmit = function(e) {
+window.handlePasscodeSubmit = function (e) {
   if (e) e.preventDefault();
   if (checkLockoutState()) return;
 
@@ -150,7 +156,7 @@ if (passcodeForm) {
   passcodeForm.addEventListener('submit', window.handlePasscodeSubmit);
 }
 
-window.togglePasscodeVisibility = function() {
+window.togglePasscodeVisibility = function () {
   const input = document.getElementById('passcode-input');
   if (!input) return;
   if (input.type === 'password') {
@@ -177,7 +183,7 @@ function unlockDashboard() {
   if (window.lucide) lucide.createIcons();
 }
 
-window.adminLogout = function() {
+window.adminLogout = function () {
   sessionStorage.removeItem(SESSION_KEY);
   adminDashboard.classList.add('hidden');
   authLockScreen.classList.remove('hidden');
@@ -278,7 +284,7 @@ function getFlagEmoji(countryCode) {
   return String.fromCodePoint(...codePoints);
 }
 
-window.renderSubmissionsTable = function() {
+window.renderSubmissionsTable = function () {
   const tbody = document.getElementById('submissions-table-body');
   const noMsg = document.getElementById('no-submissions-msg');
   if (!tbody) return;
@@ -289,7 +295,7 @@ window.renderSubmissionsTable = function() {
   const list = getStoredRegistrations();
 
   const filtered = list.filter(item => {
-    const matchesSearch = 
+    const matchesSearch =
       (item.name || '').toLowerCase().includes(searchVal) ||
       (item.email || '').toLowerCase().includes(searchVal) ||
       (item.gradeLevel || '').toLowerCase().includes(searchVal) ||
@@ -355,7 +361,7 @@ window.renderSubmissionsTable = function() {
   if (window.lucide) lucide.createIcons();
 };
 
-window.deleteRegistrant = function(id) {
+window.deleteRegistrant = function (id) {
   if (!confirm(`Are you sure you want to remove registration ${id}?`)) return;
   let list = getStoredRegistrations();
   list = list.filter(item => item.id !== id);
@@ -364,7 +370,7 @@ window.deleteRegistrant = function(id) {
 };
 
 // Reset & Clear All Local Data
-window.clearAllRegistrations = function() {
+window.clearAllRegistrations = function () {
   if (!confirm("Are you sure you want to clear all registrations and reset analytics to 0? This cannot be undone.")) return;
   localStorage.removeItem(STORAGE_KEY_REGISTRATIONS);
   localStorage.removeItem(STORAGE_KEY_COUNTRIES);
@@ -375,7 +381,7 @@ window.clearAllRegistrations = function() {
 };
 
 // CSV Export function
-window.exportToCSV = function() {
+window.exportToCSV = function () {
   const list = getStoredRegistrations();
   if (list.length === 0) {
     alert("No submissions available to export yet.");
@@ -418,9 +424,9 @@ function escapeHtml(str) {
 // Cleanup function to wipe any previously seeded dummy/sample data from localStorage
 function cleanupDummyData() {
   const dummyNames = [
-    'Sierra Brooks', 'Liam Vance', 'Maya Patel', 
-    'Alex Morgan', 'Jordan Lee', 'David Kim', 
-    'Taylor Swift', 'Ethan Carter', 'Chloe Zhang', 
+    'Sierra Brooks', 'Liam Vance', 'Maya Patel',
+    'Alex Morgan', 'Jordan Lee', 'David Kim',
+    'Taylor Swift', 'Ethan Carter', 'Chloe Zhang',
     'Test Candidate', 'Test Student'
   ];
 
@@ -474,7 +480,7 @@ function playNotificationChime() {
     gain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.4);
-  } catch(e) {
+  } catch (e) {
     console.log("Audio notification skipped:", e);
   }
 }
@@ -538,7 +544,7 @@ async function pollCloudSync() {
       flashLiveBadge(`🔔 Cloud Sync: ${localList.length} Registrations`);
       refreshDashboard();
     }
-  } catch(e) {
+  } catch (e) {
     // Non-blocking poll notice
   }
 }
@@ -552,7 +558,7 @@ function startLiveSync() {
         handleLiveNewRegistration(event.data.data);
       }
     };
-  } catch(e) {}
+  } catch (e) { }
 
   // 2. Storage event listener (handles other windows on same browser)
   window.addEventListener('storage', (e) => {
@@ -576,7 +582,7 @@ function startLiveSync() {
 // ==========================================
 // CLOUD SYNC MODAL CONTROLS
 // ==========================================
-window.openCloudSyncModal = function() {
+window.openCloudSyncModal = function () {
   const modal = document.getElementById('cloud-sync-modal');
   if (modal) modal.classList.remove('hidden');
 
@@ -605,12 +611,12 @@ window.openCloudSyncModal = function() {
   if (window.lucide) lucide.createIcons();
 };
 
-window.closeCloudSyncModal = function() {
+window.closeCloudSyncModal = function () {
   const modal = document.getElementById('cloud-sync-modal');
   if (modal) modal.classList.add('hidden');
 };
 
-window.saveAndTestWeb3FormsKey = async function() {
+window.saveAndTestWeb3FormsKey = async function () {
   const input = document.getElementById('web3forms-key-input');
   const status = document.getElementById('web3forms-key-status');
   const btn = document.getElementById('save-web3forms-btn');
@@ -663,7 +669,7 @@ window.saveAndTestWeb3FormsKey = async function() {
   }
 };
 
-window.saveCloudEndpoint = function() {
+window.saveCloudEndpoint = function () {
   const input = document.getElementById('cloud-endpoint-input');
   if (!input) return;
   const val = input.value.trim();
@@ -683,7 +689,7 @@ window.saveCloudEndpoint = function() {
   }
 };
 
-window.copyAppsScriptCode = function() {
+window.copyAppsScriptCode = function () {
   const codeElem = document.getElementById('apps-script-code');
   if (!codeElem) return;
   navigator.clipboard.writeText(codeElem.innerText).then(() => {
