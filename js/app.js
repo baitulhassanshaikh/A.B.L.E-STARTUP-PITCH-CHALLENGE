@@ -52,8 +52,8 @@ function cleanupDummyData() {
   }
 
   // Remove fake pageviews seed if present
-  const views = localStorage.getItem(STORAGE_KEY_PAGEVIEWS);
-  if (views === '148' || views === '149' || views === '150') {
+  const views = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
+  if (views > 30 && filtered.length <= 5) {
     localStorage.setItem(STORAGE_KEY_PAGEVIEWS, filtered.length.toString());
   }
 
@@ -78,6 +78,16 @@ function getFlagEmoji(countryCode) {
   return String.fromCodePoint(...codePoints);
 }
 
+function getCountryFullName(code, fallbackName) {
+  if (!code) return fallbackName || 'Global';
+  try {
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    const full = displayNames.of(code.toUpperCase());
+    if (full) return full;
+  } catch (e) {}
+  return fallbackName || code;
+}
+
 async function detectVisitorCountry() {
   try {
     const response = await fetch('https://ipapi.co/json/', { timeout: 4000 });
@@ -97,10 +107,12 @@ async function detectVisitorCountry() {
       if (res2.ok) {
         const data2 = await res2.json();
         if (data2 && data2.country) {
+          const cCode = String(data2.country).toUpperCase();
+          const fullName = getCountryFullName(cCode, cCode);
           detectedCountry = {
-            name: data2.country,
-            code: data2.country,
-            flag: getFlagEmoji(data2.country)
+            name: fullName,
+            code: cCode,
+            flag: getFlagEmoji(cCode)
           };
         }
       }
@@ -123,8 +135,12 @@ async function detectVisitorCountry() {
 }
 
 function trackPageView() {
-  const current = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
-  localStorage.setItem(STORAGE_KEY_PAGEVIEWS, (current + 1).toString());
+  // Count only once per browser session to prevent reload spam during development/testing
+  if (!sessionStorage.getItem('able_session_viewed')) {
+    sessionStorage.setItem('able_session_viewed', 'true');
+    const current = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
+    localStorage.setItem(STORAGE_KEY_PAGEVIEWS, (current + 1).toString());
+  }
 }
 
 function trackCountryVisit(countryName, countryCode) {

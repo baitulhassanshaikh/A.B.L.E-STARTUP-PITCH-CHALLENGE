@@ -200,11 +200,65 @@ function getStoredCountries() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY_COUNTRIES) || '{}'); } catch (e) { return {}; }
 }
 
+function getCountryFullName(code, fallbackName) {
+  if (!code && !fallbackName) return 'Global';
+  const query = (code || fallbackName).toUpperCase();
+  try {
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    const full = displayNames.of(query);
+    if (full) return full;
+  } catch (e) {}
+  return fallbackName || code || 'Global';
+}
+
 function refreshDashboard() {
   const list = getStoredRegistrations();
-  const views = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || list.length.toString(), 10);
-  const subs = parseInt(localStorage.getItem(STORAGE_KEY_SUBMISSIONS_COUNT) || list.length.toString(), 10);
-  const countries = getStoredCountries();
+
+  // Submissions count is strictly tied to real registration entries in the database
+  const subs = list.length;
+  localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, subs.toString());
+
+  // Page views validation: never less than registrations, never artificially inflated
+  let views = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
+  if (views > 30 && subs <= 5) {
+    views = subs > 0 ? subs : 1;
+    localStorage.setItem(STORAGE_KEY_PAGEVIEWS, views.toString());
+  } else if (views < subs) {
+    views = subs;
+    localStorage.setItem(STORAGE_KEY_PAGEVIEWS, views.toString());
+  }
+
+  // Aggregate country records from both visits and registrations
+  const rawCountries = getStoredCountries();
+  const countries = {};
+
+  // Normalize existing country entries
+  Object.keys(rawCountries).forEach(k => {
+    const item = rawCountries[k];
+    const cCode = (item.code || k).toUpperCase();
+    const cName = getCountryFullName(cCode, item.name || k);
+    if (!countries[cName]) {
+      countries[cName] = { name: cName, code: cCode, visits: 0, registrations: 0 };
+    }
+    countries[cName].visits += (item.visits || 0);
+    countries[cName].registrations += (item.registrations || 0);
+  });
+
+  // Ensure every actual registered attendee is reflected in the country breakdown
+  list.forEach(r => {
+    const cCode = (r.countryCode || '').toUpperCase();
+    const cName = getCountryFullName(cCode, r.country || 'Global');
+    if (!countries[cName]) {
+      countries[cName] = { name: cName, code: cCode, visits: 1, registrations: 1 };
+    } else {
+      if (countries[cName].registrations === 0) {
+        countries[cName].registrations = 1;
+      }
+      if (countries[cName].visits < countries[cName].registrations) {
+        countries[cName].visits = countries[cName].registrations;
+      }
+    }
+  });
 
   // Top KPI counts
   const kpiViews = document.getElementById('kpi-views');
@@ -250,18 +304,22 @@ function renderCountryTable(countries, totalViews) {
     return;
   }
 
-  // Sort descending by visits
-  entries.sort((a, b) => (b.visits || 0) - (a.visits || 0));
+  // Sort descending by registrations and visits
+  entries.sort((a, b) => ((b.registrations || 0) * 100 + (b.visits || 0)) - ((a.registrations || 0) * 100 + (a.visits || 0)));
 
   entries.forEach(item => {
+    const cName = item.name;
+    const cCode = (item.code || '').toUpperCase();
     const share = totalViews > 0 ? Math.round(((item.visits || 0) / totalViews) * 100) : 0;
+    const isCodeDifferent = cCode && cCode.length === 2 && cCode !== cName;
+
     const tr = document.createElement('tr');
     tr.className = "hover:bg-slate-50/70 transition";
     tr.innerHTML = `
       <td class="py-3 px-3 flex items-center gap-2 font-semibold text-slate-800">
-        <span class="text-base">${getFlagEmoji(item.code)}</span>
-        <span>${escapeHtml(item.name)}</span>
-        ${item.code ? `<span class="text-[10px] text-slate-400 font-mono bg-slate-100 px-1.5 py-0.5 rounded">${escapeHtml(item.code)}</span>` : ''}
+        <span class="text-base">${getFlagEmoji(cCode)}</span>
+        <span>${escapeHtml(cName)}</span>
+        ${isCodeDifferent ? `<span class="text-[10px] text-slate-400 font-mono bg-slate-100 px-1.5 py-0.5 rounded">${escapeHtml(cCode)}</span>` : ''}
       </td>
       <td class="py-3 px-3 text-center font-bold text-slate-700">${item.visits || 0}</td>
       <td class="py-3 px-3 text-center font-bold text-brand-green-dark">${item.registrations || 0}</td>
@@ -443,9 +501,9 @@ function cleanupDummyData() {
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, filtered.length.toString());
   }
 
-  // Remove fake 148 pageviews seed if present
-  const views = localStorage.getItem(STORAGE_KEY_PAGEVIEWS);
-  if (views === '148' || views === '149' || views === '150') {
+  // Reset inflated developer views
+  const views = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
+  if (views > 30 && filtered.length <= 5) {
     localStorage.setItem(STORAGE_KEY_PAGEVIEWS, filtered.length.toString());
   }
 
