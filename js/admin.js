@@ -19,48 +19,119 @@ const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
 const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
 const STORAGE_KEY_SUBMISSIONS_COUNT = 'able_analytics_submissions';
 const STORAGE_KEY_CLOUD_ENDPOINT = 'able_cloud_sync_endpoint';
+const STORAGE_KEY_WEB3FORMS = 'able_web3forms_key';
+const DEFAULT_WEB3FORMS_KEY = 'ae824218-d5fa-4607-b1ba-7c113d3f7ed0';
 const DEFAULT_CLOUD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw76FfvBwuC0rXD-9Yn34z68HchaQP12MAZR6YGL_5EvltMD3BqCVwTm3PpzW-Kmt82yA/exec';
 
 let liveSyncInterval = null;
 let lastKnownSubmissionsCount = 0;
 
-// Standard Web Crypto API for SHA-256 with safe fallback
-async function sha256(message) {
-  try {
-    if (window.crypto && window.crypto.subtle) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+// High-Security Cryptographic SHA-256 Engine (Zero plain-text password in source code)
+function sha256Pure(ascii) {
+  function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+  var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '', words = [];
+  var asciiBitLength = ascii[lengthProperty] * 8, hash = [], k = [], primeCounter = 0, isComposite = {};
+  for (var candidate = 2; primeCounter < 64; candidate++) {
+    if (!isComposite[candidate]) {
+      for (i = 0; i < 313; i += candidate) { isComposite[i] = candidate; }
+      hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+      k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
     }
-  } catch (err) {
-    console.warn("Crypto subtle fallback:", err);
   }
-  return "";
+  ascii += '\x80';
+  while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+  for (i = 0; i < ascii[lengthProperty]; i++) {
+    j = ascii.charCodeAt(i);
+    if (j >> 8) return;
+    words[i >> 2] |= j << ((3 - i) % 4) * 8;
+  }
+  words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+  words[words[lengthProperty]] = (asciiBitLength);
+  for (j = 0; j < words[lengthProperty];) {
+    var w = words.slice(j, j += 16), oldHash = hash;
+    hash = hash.slice(0, 8);
+    for (i = 0; i < 64; i++) {
+      var i2 = i + j, w15 = w[i - 15], w2 = w[i - 2], a = hash[0], e = hash[4];
+      var temp1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ ((~e) & hash[6])) + k[i] + (w[i] = (i < 16) ? w[i] : (w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | 0);
+      var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+      hash = [(temp1 + temp2) | 0].concat(hash);
+      hash[4] = (hash[4] + temp1) | 0;
+    }
+    for (i = 0; i < 8; i++) { hash[i] = (hash[i] + oldHash[i]) | 0; }
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j + 1; j--) {
+      var b = (hash[i] >> (j * 8)) & 255;
+      result += ((b < 16) ? 0 : '') + b.toString(16);
+    }
+  }
+  return result;
 }
 
-window.handlePasscodeSubmit = async function(e) {
+// Anti-Brute-Force Rate Limiting Engine
+let failedAttempts = parseInt(localStorage.getItem('able_auth_failed_attempts') || '0', 10);
+let lockoutUntil = parseInt(localStorage.getItem('able_auth_lockout_until') || '0', 10);
+
+function checkLockoutState() {
+  const now = Date.now();
+  const errorElem = document.getElementById('auth-error-msg');
+  const inputElem = document.getElementById('passcode-input');
+
+  if (lockoutUntil > now) {
+    const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
+    const mins = Math.floor(remainingSecs / 60);
+    const secs = remainingSecs % 60;
+    if (errorElem) {
+      errorElem.textContent = `Security Lock: Too many failed attempts. Try again in ${mins}m ${secs}s.`;
+      errorElem.classList.remove('hidden');
+    }
+    if (inputElem) inputElem.disabled = true;
+    return true;
+  } else {
+    if (lockoutUntil > 0 && lockoutUntil <= now) {
+      localStorage.removeItem('able_auth_lockout_until');
+      localStorage.setItem('able_auth_failed_attempts', '0');
+      failedAttempts = 0;
+      lockoutUntil = 0;
+    }
+    if (inputElem) inputElem.disabled = false;
+    return false;
+  }
+}
+
+window.handlePasscodeSubmit = function(e) {
   if (e) e.preventDefault();
+  if (checkLockoutState()) return;
+
   const inputElem = document.getElementById('passcode-input');
   const errorElem = document.getElementById('auth-error-msg');
   const val = (inputElem ? inputElem.value : '').trim();
 
-  // Instant direct match check (100% reliable across all browsers & contexts)
-  let isMatch = (val.toLowerCase() === 'ad1672010');
-
-  if (!isMatch) {
-    try {
-      const hash = await sha256(val);
-      if (hash === AUTH_HASH) isMatch = true;
-    } catch(err) {}
-  }
+  // Cryptographic hash validation (One-way hash matching)
+  const computedHash = sha256Pure(val);
+  const isMatch = (computedHash === AUTH_HASH);
 
   if (isMatch) {
+    localStorage.removeItem('able_auth_failed_attempts');
+    localStorage.removeItem('able_auth_lockout_until');
     sessionStorage.setItem(SESSION_KEY, 'true');
     if (errorElem) errorElem.classList.add('hidden');
     unlockDashboard();
   } else {
-    if (errorElem) errorElem.classList.remove('hidden');
+    failedAttempts++;
+    localStorage.setItem('able_auth_failed_attempts', failedAttempts.toString());
+
+    if (failedAttempts >= 5) {
+      lockoutUntil = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem('able_auth_lockout_until', lockoutUntil.toString());
+      checkLockoutState();
+    } else {
+      if (errorElem) {
+        errorElem.textContent = `Incorrect passcode. Access denied. (${5 - failedAttempts} attempts remaining)`;
+        errorElem.classList.remove('hidden');
+      }
+    }
+
     if (inputElem) {
       inputElem.classList.add('border-rose-400');
       inputElem.value = '';
@@ -90,6 +161,7 @@ window.togglePasscodeVisibility = function() {
 };
 
 function checkAuthOnLoad() {
+  checkLockoutState();
   if (sessionStorage.getItem(SESSION_KEY) === 'true') {
     unlockDashboard();
   } else {
@@ -518,12 +590,77 @@ window.openCloudSyncModal = function() {
     status.classList.remove('hidden');
   }
 
+  // Populate Web3Forms Key
+  const keyInput = document.getElementById('web3forms-key-input');
+  const activeKey = localStorage.getItem(STORAGE_KEY_WEB3FORMS) || DEFAULT_WEB3FORMS_KEY;
+  if (keyInput) keyInput.value = activeKey;
+
+  const keyStatus = document.getElementById('web3forms-key-status');
+  if (keyStatus) {
+    keyStatus.textContent = "✓ Active key configured. Submissions forward to this email inbox.";
+    keyStatus.className = "text-[11px] text-emerald-700 mt-1.5 font-medium";
+    keyStatus.classList.remove('hidden');
+  }
+
   if (window.lucide) lucide.createIcons();
 };
 
 window.closeCloudSyncModal = function() {
   const modal = document.getElementById('cloud-sync-modal');
   if (modal) modal.classList.add('hidden');
+};
+
+window.saveAndTestWeb3FormsKey = async function() {
+  const input = document.getElementById('web3forms-key-input');
+  const status = document.getElementById('web3forms-key-status');
+  const btn = document.getElementById('save-web3forms-btn');
+  if (!input) return;
+
+  const key = input.value.trim();
+  if (!key) {
+    localStorage.removeItem(STORAGE_KEY_WEB3FORMS);
+    if (status) {
+      status.textContent = "Reverted to default system key.";
+      status.className = "text-[11px] text-slate-500 mt-1.5 font-medium";
+      status.classList.remove('hidden');
+    }
+    return;
+  }
+
+  localStorage.setItem(STORAGE_KEY_WEB3FORMS, key);
+  if (btn) btn.disabled = true;
+  if (status) {
+    status.textContent = "Testing dispatch to your Gmail...";
+    status.className = "text-[11px] text-amber-600 mt-1.5 font-medium";
+    status.classList.remove('hidden');
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('access_key', key);
+    formData.append('from_name', 'ABLE Admin Verification');
+    formData.append('subject', '✅ Email Routing Verified - ABLE System');
+    formData.append('message', 'This confirms your new coordinator email key is active and receiving live registrations.');
+
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      status.textContent = "✓ Key saved & verified! A test email was delivered to your Gmail inbox.";
+      status.className = "text-[11px] text-emerald-700 mt-1.5 font-medium";
+    } else {
+      status.textContent = `Notice: ${data.message || 'Key saved. Please ensure it is verified on web3forms.com.'}`;
+      status.className = "text-[11px] text-amber-700 mt-1.5 font-medium";
+    }
+  } catch (err) {
+    status.textContent = "Key saved locally! (Could not reach network for test)";
+    status.className = "text-[11px] text-slate-600 mt-1.5 font-medium";
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 };
 
 window.saveCloudEndpoint = function() {

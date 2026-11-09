@@ -14,6 +14,8 @@ const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
 const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
 const STORAGE_KEY_SUBMISSIONS_COUNT = 'able_analytics_submissions';
 const STORAGE_KEY_CLOUD_ENDPOINT = 'able_cloud_sync_endpoint';
+const STORAGE_KEY_WEB3FORMS = 'able_web3forms_key';
+const DEFAULT_WEB3FORMS_KEY = 'ae824218-d5fa-4607-b1ba-7c113d3f7ed0';
 const DEFAULT_CLOUD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw76FfvBwuC0rXD-9Yn34z68HchaQP12MAZR6YGL_5EvltMD3BqCVwTm3PpzW-Kmt82yA/exec';
 
 let detectedCountry = {
@@ -197,14 +199,14 @@ if (form) {
       timestamp: new Date().toLocaleString()
     };
 
-    // Direct Web3Forms submission to alfaizablebusines@gmail.com
-    // Key: bb74c042-c23a-442e-b0f1-83a02d802be0
-    // Note: Web3Forms Free API requires FormData (multipart/form-data) without custom JSON headers
+    // Direct Web3Forms submission to coordinators
+    // Key: ae824218-d5fa-4607-b1ba-7c113d3f7ed0 (or dynamic key from Admin Panel)
     let emailDispatchSuccess = false;
     let dispatchStatusText = "";
 
     try {
-      formData.set('access_key', 'bb74c042-c23a-442e-b0f1-83a02d802be0');
+      const activeKey = localStorage.getItem(STORAGE_KEY_WEB3FORMS) || DEFAULT_WEB3FORMS_KEY;
+      formData.set('access_key', activeKey);
       formData.set('ticket_id', submissionData.id);
       formData.set('client_location', `${detectedCountry.name} (${detectedCountry.code})`);
       formData.set('replyto', submissionData.email);
