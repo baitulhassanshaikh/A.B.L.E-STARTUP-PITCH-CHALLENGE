@@ -1,25 +1,16 @@
-/**
- * ABLE Nonprofit Portal - Admin Dashboard Logic (admin.js)
- * Features:
- *  - Client-side SHA-256 Passcode Verification for 'ad1672010'
- *  - Real-time Analytics & KPIs from LocalStorage
- *  - Colorado Springs Attendance Ratio Visualizer
- *  - Country Breakdown Analytics Table
- *  - Searchable & Filterable Registrants Database
- *  - Clean CSV Export Functionality (exportToCSV)
- */
 
-// SHA-256 Hash for passcode: 'ad1672010'
+
+
 const AUTH_HASH = "e2876a0b7ef53cefddb98836ea36c8bd13557deb0defe14c49116568952db671";
 const SESSION_KEY = "able_pitch_admin_authorized_v2";
 
-// DevTools Console Security Guard Banner
+
 try {
   console.log('%cSTOP!', 'color: #ef4444; font-size: 36px; font-weight: 900;');
   console.log('%cThis is a restricted administration portal for ABLE Nonprofit. All actions and sessions are cryptographically verified and monitored.', 'color: #334155; font-size: 13px; font-weight: 600;');
 } catch (e) {}
 
-// Storage Keys
+
 const STORAGE_KEY_PAGEVIEWS = 'able_analytics_pageviews';
 const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
 const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
@@ -32,7 +23,7 @@ const DEFAULT_CLOUD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw76FfvB
 let liveSyncInterval = null;
 let lastKnownSubmissionsCount = 0;
 
-// High-Security Cryptographic SHA-256 Engine (Zero plain-text password in source code)
+
 function sha256Pure(ascii) {
   function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
   var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '', words = [];
@@ -74,7 +65,7 @@ function sha256Pure(ascii) {
   return result;
 }
 
-// Anti-Brute-Force Rate Limiting Engine
+
 let failedAttempts = parseInt(localStorage.getItem('able_auth_failed_attempts') || '0', 10);
 let lockoutUntil = parseInt(localStorage.getItem('able_auth_lockout_until') || '0', 10);
 
@@ -113,7 +104,7 @@ window.handlePasscodeSubmit = function (e) {
   const errorElem = document.getElementById('auth-error-msg');
   const val = (inputElem ? inputElem.value : '').trim();
 
-  // Cryptographic hash validation (One-way hash matching)
+
   const computedHash = sha256Pure(val);
   const isMatch = (computedHash === AUTH_HASH);
 
@@ -214,11 +205,11 @@ function getCountryFullName(code, fallbackName) {
 function refreshDashboard() {
   const list = getStoredRegistrations();
 
-  // Submissions count is strictly tied to real registration entries in the database
+
   const subs = list.length;
   localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, subs.toString());
 
-  // Page views validation: never less than registrations, never artificially inflated
+
   let views = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
   if (views > 30 && subs <= 5) {
     views = subs > 0 ? subs : 1;
@@ -228,11 +219,11 @@ function refreshDashboard() {
     localStorage.setItem(STORAGE_KEY_PAGEVIEWS, views.toString());
   }
 
-  // Aggregate country records from both visits and registrations
+
   const rawCountries = getStoredCountries();
   const countries = {};
 
-  // Normalize existing country entries
+
   Object.keys(rawCountries).forEach(k => {
     const item = rawCountries[k];
     const cCode = (item.code || k).toUpperCase();
@@ -244,7 +235,7 @@ function refreshDashboard() {
     countries[cName].registrations += (item.registrations || 0);
   });
 
-  // Ensure every actual registered attendee is reflected in the country breakdown
+
   list.forEach(r => {
     const cCode = (r.countryCode || '').toUpperCase();
     const cName = getCountryFullName(cCode, r.country || 'Global');
@@ -260,7 +251,7 @@ function refreshDashboard() {
     }
   });
 
-  // Top KPI counts
+
   const kpiViews = document.getElementById('kpi-views');
   const kpiSubs = document.getElementById('kpi-submissions');
   const kpiConv = document.getElementById('kpi-conversion');
@@ -273,7 +264,7 @@ function refreshDashboard() {
   if (kpiConv) kpiConv.textContent = `${conv}%`;
   if (kpiCountries) kpiCountries.textContent = Object.keys(countries).length.toString();
 
-  // Colorado Springs Attendance vs Online ratio
+
   const inPersonCount = list.filter(r => (r.venueAttendance || '').includes('Colorado Springs')).length;
   const total = list.length;
   const inPersonPct = total > 0 ? Math.round((inPersonCount / total) * 100) : 0;
@@ -304,7 +295,7 @@ function renderCountryTable(countries, totalViews) {
     return;
   }
 
-  // Sort descending by registrations and visits
+
   entries.sort((a, b) => ((b.registrations || 0) * 100 + (b.visits || 0)) - ((a.registrations || 0) * 100 + (a.visits || 0)));
 
   entries.forEach(item => {
@@ -404,9 +395,9 @@ window.renderSubmissionsTable = function () {
         ${sub.countryFlag || '🌐'} ${escapeHtml(sub.country || 'Global')}
       </td>
       <td class="py-3 px-3.5 text-right">
-        <button 
-          onclick="deleteRegistrant('${escapeHtml(sub.id)}')" 
-          class="text-slate-400 hover:text-rose-500 p-1 rounded transition" 
+        <button
+          onclick="deleteRegistrant('${escapeHtml(sub.id)}')"
+          class="text-slate-400 hover:text-rose-500 p-1 rounded transition"
           title="Remove entry"
         >
           <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
@@ -427,7 +418,6 @@ window.deleteRegistrant = function (id) {
   refreshDashboard();
 };
 
-// Reset & Clear All Local Data
 window.clearAllRegistrations = function () {
   if (!confirm("Are you sure you want to clear all registrations and reset analytics to 0? This cannot be undone.")) return;
   localStorage.removeItem(STORAGE_KEY_REGISTRATIONS);
@@ -438,7 +428,6 @@ window.clearAllRegistrations = function () {
   refreshDashboard();
 };
 
-// CSV Export function
 window.exportToCSV = function () {
   const list = getStoredRegistrations();
   if (list.length === 0) {
@@ -479,7 +468,7 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-// Cleanup function to wipe any previously seeded dummy/sample data from localStorage
+
 function cleanupDummyData() {
   const dummyNames = [
     'Sierra Brooks', 'Liam Vance', 'Maya Patel',
@@ -501,13 +490,13 @@ function cleanupDummyData() {
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, filtered.length.toString());
   }
 
-  // Reset inflated developer views
+
   const views = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
   if (views > 30 && filtered.length <= 5) {
     localStorage.setItem(STORAGE_KEY_PAGEVIEWS, filtered.length.toString());
   }
 
-  // Remove fake countries seed if present
+
   const countries = JSON.parse(localStorage.getItem(STORAGE_KEY_COUNTRIES) || '{}');
   if (countries["United States"] && countries["United States"].visits === 112) {
     localStorage.removeItem(STORAGE_KEY_COUNTRIES);
@@ -516,9 +505,7 @@ function cleanupDummyData() {
   localStorage.removeItem('able_final_ready_v3');
 }
 
-// ==========================================
-// LIVE REAL-TIME ENGINE (NO RELOAD NEEDED)
-// ==========================================
+
 function playNotificationChime() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -528,8 +515,8 @@ function playNotificationChime() {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
 
     gain.gain.setValueAtTime(0.2, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
@@ -573,7 +560,7 @@ function handleLiveNewRegistration(newSub, isFromCloud = false) {
   refreshDashboard();
 }
 
-// Background Cloud Poller for Cross-Device Sync
+
 async function pollCloudSync() {
   const endpoint = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT) || DEFAULT_CLOUD_ENDPOINT;
   if (!endpoint) return;
@@ -603,12 +590,12 @@ async function pollCloudSync() {
       refreshDashboard();
     }
   } catch (e) {
-    // Non-blocking poll notice
+
   }
 }
 
 function startLiveSync() {
-  // 1. Instant cross-tab/cross-window broadcast channel
+
   try {
     const channel = new BroadcastChannel('able_live_sync_channel');
     channel.onmessage = (event) => {
@@ -618,14 +605,14 @@ function startLiveSync() {
     };
   } catch (e) { }
 
-  // 2. Storage event listener (handles other windows on same browser)
+
   window.addEventListener('storage', (e) => {
     if (e.key === STORAGE_KEY_REGISTRATIONS) {
       refreshDashboard();
     }
   });
 
-  // 3. Regular polling interval for cloud and local changes (every 3.5s)
+
   if (liveSyncInterval) clearInterval(liveSyncInterval);
   liveSyncInterval = setInterval(() => {
     const currentList = getStoredRegistrations();
@@ -637,9 +624,7 @@ function startLiveSync() {
   }, 3500);
 }
 
-// ==========================================
-// CLOUD SYNC MODAL CONTROLS
-// ==========================================
+
 window.openCloudSyncModal = function () {
   const modal = document.getElementById('cloud-sync-modal');
   if (modal) modal.classList.remove('hidden');
@@ -654,7 +639,7 @@ window.openCloudSyncModal = function () {
     status.classList.remove('hidden');
   }
 
-  // Populate Web3Forms Key
+
   const keyInput = document.getElementById('web3forms-key-input');
   const activeKey = localStorage.getItem(STORAGE_KEY_WEB3FORMS) || DEFAULT_WEB3FORMS_KEY;
   if (keyInput) keyInput.value = activeKey;
@@ -762,7 +747,7 @@ window.copyAppsScriptCode = function () {
   });
 };
 
-// On load execution
+
 window.addEventListener('DOMContentLoaded', () => {
   cleanupDummyData();
   checkAuthOnLoad();

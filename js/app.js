@@ -1,14 +1,6 @@
-/**
- * ABLE Nonprofit Portal - Frontend Application Logic (app.js)
- * Features:
- *  - Geolocation Country Detection via ipapi.co
- *  - Direct Gmail Email Submission via Web3Forms (alfaizablebusines@gmail.com)
- *  - Voice-Enabled AI Assistant via Web Speech API (window.speechSynthesis)
- *  - Dynamic Digital Event Pass Generation with QR Code
- *  - Real-Time LocalStorage Analytics & Visitor Tracking
- */
 
-// Storage Keys
+
+
 const STORAGE_KEY_PAGEVIEWS = 'able_analytics_pageviews';
 const STORAGE_KEY_COUNTRIES = 'able_analytics_countries';
 const STORAGE_KEY_REGISTRATIONS = 'able_registrations';
@@ -24,12 +16,10 @@ let detectedCountry = {
   flag: '🇺🇸'
 };
 
-// Voice Speech State
+
 let isSpeechEnabled = true;
 
-// ==========================================
-// 1. CLEANUP DUMMY/MOCK DATA
-// ==========================================
+
 function cleanupDummyData() {
   const dummyNames = [
     'Sierra Brooks', 'Liam Vance', 'Maya Patel',
@@ -51,13 +41,13 @@ function cleanupDummyData() {
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, filtered.length.toString());
   }
 
-  // Remove fake pageviews seed if present
+
   const views = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
   if (views > 30 && filtered.length <= 5) {
     localStorage.setItem(STORAGE_KEY_PAGEVIEWS, filtered.length.toString());
   }
 
-  // Remove fake countries seed if present
+
   const countries = JSON.parse(localStorage.getItem(STORAGE_KEY_COUNTRIES) || '{}');
   if (countries["United States"] && countries["United States"].visits === 112) {
     localStorage.removeItem(STORAGE_KEY_COUNTRIES);
@@ -66,9 +56,7 @@ function cleanupDummyData() {
   localStorage.removeItem('able_final_ready_v3');
 }
 
-// ==========================================
-// 2. GEOLOCATION & VISITOR TRACKING
-// ==========================================
+
 function getFlagEmoji(countryCode) {
   if (!countryCode || countryCode.length !== 2) return '🌐';
   const codePoints = countryCode
@@ -135,7 +123,7 @@ async function detectVisitorCountry() {
 }
 
 function trackPageView() {
-  // Count only once per browser session to prevent reload spam during development/testing
+
   if (!sessionStorage.getItem('able_session_viewed')) {
     sessionStorage.setItem('able_session_viewed', 'true');
     const current = parseInt(localStorage.getItem(STORAGE_KEY_PAGEVIEWS) || '0', 10);
@@ -179,9 +167,7 @@ window.editCountryPrompt = function () {
   }
 };
 
-// ==========================================
-// 3. FORM SUBMISSION (Web3Forms to alfaizablebusines@gmail.com)
-// ==========================================
+
 const form = document.getElementById('registration-form');
 const submitBtn = document.getElementById('submit-btn');
 const btnText = document.getElementById('btn-text');
@@ -215,8 +201,7 @@ if (form) {
       timestamp: new Date().toLocaleString()
     };
 
-    // Direct Web3Forms submission to coordinators
-    // Key: ae824218-d5fa-4607-b1ba-7c113d3f7ed0 (or dynamic key from Admin Panel)
+
     let emailDispatchSuccess = false;
     let dispatchStatusText = "";
 
@@ -260,18 +245,18 @@ if (form) {
       showToast("Registration Saved", "Stored locally on your device.", "warning");
     }
 
-    // Store in LocalStorage
+
     let existing = [];
     try { existing = JSON.parse(localStorage.getItem(STORAGE_KEY_REGISTRATIONS) || '[]'); } catch (e) { }
     existing.unshift(submissionData);
     localStorage.setItem(STORAGE_KEY_REGISTRATIONS, JSON.stringify(existing));
 
-    // Update Submissions Count
+
     const currentSubs = parseInt(localStorage.getItem(STORAGE_KEY_SUBMISSIONS_COUNT) || '0', 10);
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS_COUNT, (currentSubs + 1).toString());
     trackCountryRegistration(detectedCountry.name);
 
-    // Broadcast LIVE to Admin tabs immediately (Zero-reload real-time sync)
+
     try {
       const channel = new BroadcastChannel('able_live_sync_channel');
       channel.postMessage({
@@ -280,7 +265,7 @@ if (form) {
       });
     } catch (e) { }
 
-    // Cloud Webhook dispatch (Cross-device real-time sync + Automated Student Email)
+
     const cloudEndpoint = localStorage.getItem(STORAGE_KEY_CLOUD_ENDPOINT) || DEFAULT_CLOUD_ENDPOINT;
     if (cloudEndpoint) {
       try {
@@ -293,7 +278,7 @@ if (form) {
       } catch (e) { }
     }
 
-    // Update Confirmation Badges
+
     const badge = document.getElementById('dispatch-badge');
     if (badge) {
       if (emailDispatchSuccess) {
@@ -309,23 +294,23 @@ if (form) {
       statusMsgElem.textContent = dispatchStatusText;
     }
 
-    // Render Digital Pass
+
     populateDigitalTicket(submissionData);
 
-    // Reset button UI
+
     submitBtn.disabled = false;
     btnText.textContent = "Submit My Registration";
     btnIcon.classList.remove('hidden');
     btnSpinner.classList.add('hidden');
 
-    // Swap view to confirmation screen
+
     document.getElementById('form-header-area').classList.add('hidden');
     form.classList.add('hidden');
     document.getElementById('confirmation-screen').classList.remove('hidden');
 
     document.getElementById('register').scrollIntoView({ behavior: 'smooth' });
 
-    // Voice & audible notification
+
     speakAiText("Congratulations! Your registration for the ABLE Startup Pitch Challenge has been submitted. Details have been forwarded to our program coordinators, and we will follow up with your prep pack shortly.");
   });
 }
@@ -386,9 +371,7 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-// ==========================================
-// 4. FLOATING NOTIFICATIONS (TOASTS)
-// ==========================================
+
 function showToast(title, message, type = 'success') {
   let toastContainer = document.getElementById('toast-container');
   if (!toastContainer) {
@@ -427,9 +410,7 @@ function showToast(title, message, type = 'success') {
   }, 5000);
 }
 
-// ==========================================
-// 5. SPEECH SYNTHESIS & AI ASSISTANT
-// ==========================================
+
 if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = () => {
     window.speechSynthesis.getVoices();
@@ -573,9 +554,7 @@ function generateAssistantResponse(prompt) {
   return "The <strong>ABLE Business Startup Pitch Challenge</strong> takes place in <strong>November 2026</strong> with a <strong>$250 top prize</strong> for Grades 6+. You can attend in Colorado Springs or online via Zoom. Fill out the form above to lock your free spot!";
 }
 
-// ==========================================
-// 5. ON LOAD INITIALIZATION
-// ==========================================
+
 window.addEventListener('DOMContentLoaded', () => {
   cleanupDummyData();
   trackPageView();
@@ -583,7 +562,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (window.lucide) lucide.createIcons();
 });
 
-// Secret Admin Key Shortcut (Ctrl + Shift + A)
+
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
     e.preventDefault();

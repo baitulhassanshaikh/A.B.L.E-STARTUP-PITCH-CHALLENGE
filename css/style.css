@@ -1,7 +1,4 @@
-/* ==============================================================
-   ABLE Nonprofit - Pitch Challenge Design System & Theme Styles
-   Clean, soft, organic aesthetic with custom shadows and micro-animations
-   ============================================================== */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap');
 
@@ -19,7 +16,7 @@ html, body {
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
 
-  /* ABLE Brand Palette */
+
   --color-brand-green: #22C55E;
   --color-brand-green-dark: #16A34A;
   --color-brand-green-light: #86EFAC;
@@ -37,11 +34,11 @@ html, body {
   --bg-page: #FAFAFA;
 }
 
-/* Global Page Base with subtle organic ambient gradients */
+
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-page);
-  background-image: 
+  background-image:
     radial-gradient(at 12% 12%, rgba(34, 197, 94, 0.05) 0px, transparent 50%),
     radial-gradient(at 88% 18%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
     radial-gradient(at 50% 88%, rgba(236, 72, 153, 0.04) 0px, transparent 60%);
@@ -50,22 +47,22 @@ body {
   min-height: 100vh;
 }
 
-/* Deep Emerald Hero Banner with Subtle Geometric Pattern */
+
 .hero-geometric-bg {
   background-color: #064E3B;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 12%, rgba(52, 211, 153, 0.16) 0%, transparent 65%),
     linear-gradient(180deg, #064E3B 0%, #04382A 100%),
     radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 28px 28px;
 }
 
-/* Headings font */
+
 h1, h2, h3, .font-display {
   font-family: var(--font-display);
 }
 
-/* Custom Soft Scrollbars */
+
 .custom-scroll::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -81,7 +78,7 @@ h1, h2, h3, .font-display {
   background: #94A3B8;
 }
 
-/* Gentle Soft Pulse Animation */
+
 @keyframes pulseSoft {
   0%, 100% {
     transform: scale(1);
@@ -97,7 +94,7 @@ h1, h2, h3, .font-display {
   animation: pulseSoft 3s ease-in-out infinite;
 }
 
-/* Custom Multi-Stage Shadows */
+
 .shadow-soft {
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
 }
@@ -114,14 +111,14 @@ h1, h2, h3, .font-display {
   box-shadow: 0 12px 32px -4px rgba(245, 158, 11, 0.28);
 }
 
-/* Gold Gradient Headline */
+
 .gold-gradient-text {
   background: linear-gradient(135deg, #FDE68A 0%, #FBBF24 50%, #F59E0B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Printable Ticket Media Rules */
+
 @media print {
   body * {
     visibility: hidden;
